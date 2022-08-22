@@ -2,10 +2,6 @@ from .functions import nlp, audio, db, anim
 # import ast
 # from classes import character, context
 primitivePath = "/World/audio2face/PlayerStreaming"
-# primitivePath = "/World/LazyGraph/PlayerStreaming"
-# outputPath = r"C:/Users/phn431/Desktop/digital-humans-backend/wav/output.wav"
-# outputPath = r"C:\Users\Alif Jakir\Documents\GitHub\digital-humans-backend\wav\output.wav"
-outputPath = fr"../../wav/output.wav"
 
 class Params:
     def __init__(self, **kwargs):
@@ -38,7 +34,7 @@ def get_response(promptText, sessionID, characterID):
     db.update_session_data(params.sessionID, updatedHistory)
     
     # Generate wav
-    wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion, outputPath)
+    wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion)
     
     # Execute animation
     anim.animate(wavPath, primitivePath)

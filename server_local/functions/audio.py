@@ -4,25 +4,43 @@ from pydub import AudioSegment
 import time
 from pathlib import Path
 
-def generate_wav(text, speaker, style, outputPath):
+def generate_wav(text, speaker, style):
 
     speech_config = speechsdk.SpeechConfig(subscription="bfc08e214f6c48cebcde668a433196d3", region="eastus")
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
-    audio_config = speechsdk.audio.AudioOutputConfig(filename="./wav/output.wav")
+    wavPath = "/recording/ai/ai_" + str(time.time()) + ".wav" # the path of the current audio file
+
+    audio_config = speechsdk.audio.AudioOutputConfig(filename= "." + wavPath)
 
     # Set either the `SpeechSynthesisVoiceName` or `SpeechSynthesisLanguage`.
     speech_config.speech_synthesis_language = "en-US" 
     speech_config.speech_synthesis_voice_name ="en-US-TonyNeural"
-    speech_config.speech_synthesis_voice_name
 
     # Creates a speech synthesizer.
     synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
     synthesizer.speak_text(text)
 
-    # AudioSegment.converter = r"C:/Python310/Lib/site-packages/ffmpeg"
-
-    return outputPath
+    return wavPath
 
 def cleanup(wavPath, outputPath):
     os.remove(wavPath)
     os.remove(outputPath)
+
+# This will concatenate the files together
+def concat_audio(aiPath, humanPath, outputPath=None):
+    aiPaths = [Path(aiPath) / f for f in os.listdir(aiPath) if f.endswith(".wav")]
+    humanPaths = [Path(humanPath) / f for f in os.listdir(humanPath) if f.endswith(".wav")] 
+    # Concatenate the audio files, starting with the human Paths, alternating with the ai paths.
+    audio = AudioSegment.empty()
+    for i in range(len(humanPaths)-1):
+        audio += AudioSegment.from_file(humanPaths[i])
+        audio += AudioSegment.from_file(aiPaths[i])
+
+    if outputPath is None: # default output path
+        outputPath = "recording/output/output_" + str(time.time()) + ".wav"
+    audio.export(outputPath, format="wav")
+    return audio
+
+
+    
+    
