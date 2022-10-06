@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 def generate_wav(text, speaker, style):
-
+    """Generates a wav file from text using the Azure Cognitive Services Speech SDK.""" 
     speech_config = speechsdk.SpeechConfig(subscription="bfc08e214f6c48cebcde668a433196d3", region="eastus")
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
     wavPath = "/recording/ai/ai_" + str(time.time()) + ".wav" # the path of the current audio file
@@ -23,11 +23,15 @@ def generate_wav(text, speaker, style):
     return wavPath
 
 def cleanup(wavPath, outputPath):
-    os.remove(wavPath)
-    os.remove(outputPath)
+    """Deletes the temporary files in the wavPath and outputPath directories."""
+    print("Cleaning up temporary files...")
+    for f1,f2 in zip(os.listdir(wavPath), os.listdir(outputPath)):
+        os.remove(wavPath + f1)
+        os.remove(outputPath + f2)    
 
-# This will concatenate the files together
 def concat_audio(aiPath, humanPath, outputPath=None):
+    """Concatenates the audio files in the aiPath and humanPath directories into a single file."""
+    print("Concatenating audio files...")
     aiPaths = [Path(aiPath) / f for f in os.listdir(aiPath) if f.endswith(".wav")]
     humanPaths = [Path(humanPath) / f for f in os.listdir(humanPath) if f.endswith(".wav")] 
     # Concatenate the audio files, starting with the human Paths, alternating with the ai paths.
@@ -39,6 +43,8 @@ def concat_audio(aiPath, humanPath, outputPath=None):
     if outputPath is None: # default output path
         outputPath = "recording/output/output_" + str(time.time()) + ".wav"
     audio.export(outputPath, format="wav")
+
+    print("Concatenated audio files to " + outputPath)
     return audio
 
 

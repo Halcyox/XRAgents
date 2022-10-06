@@ -49,5 +49,8 @@ while(convoFlag):
         convoFlag = False
         break
 
+# Save the audio files to the output directory
+time.sleep(0.5)
 audio.concat_audio("recording/ai/", "recording/user/") # the finished audio file is saved
+audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
 
