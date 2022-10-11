@@ -2,6 +2,7 @@ from .functions import nlp, audio, db, anim
 # import ast
 # from classes import character, context
 primitivePath = "/World/audio2face/PlayerStreaming"
+primitivePathSecondCharacter = "/World/audio2face_01/PlayerStreaming2"
 
 class Params:
     def __init__(self, **kwargs):

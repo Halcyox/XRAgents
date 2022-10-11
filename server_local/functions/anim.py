@@ -10,4 +10,5 @@ def animate(wavPath, primitivePath):
     command = fr"""cd {stream_Path} && python {stream_Client} {wavPath} {primitivePath}"""
     # python test_client.py {wavPath} {primitivePath}
     # """
+    print(command)
     os.system(command)
