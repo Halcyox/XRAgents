@@ -7,7 +7,7 @@ def animate(wavPath, primitivePath):
     stream_Client = os.path.abspath(fr"./deps/streaming_server/test_client.py")
     print(stream_Path)
     print(stream_Client)
-    command = fr"""cd {stream_Path} && python {stream_Client} {wavPath} {primitivePath}"""
+    command = fr"""cd {stream_Path} && py {stream_Client} {wavPath} {primitivePath}"""
     # python test_client.py {wavPath} {primitivePath}
     # """
     print(command)
