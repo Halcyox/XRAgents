@@ -24,3 +24,17 @@ class Script:
 
     def get_lines(self):    
         return self.lines
+
+# saves the db history into a file, takes a server and a sessionID as parameters
+def save_history(server, sessionID,outputDir="recording/script_output/"):
+    dirname = os.path.dirname(__file__)
+    # get the history from the server
+    history = server.get_history(sessionID)
+    # get the path to the history file
+    historyPath = os.path.join(dirname,f"../../{outputDir}", f"{str(sessionID)}_history.txt")
+    # open the file
+    historyFile = open(historyPath, "w")
+    # write the history to the file
+    historyFile.write(history)
+    # close the file
+    historyFile.close()

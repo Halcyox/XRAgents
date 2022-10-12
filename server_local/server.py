@@ -1,8 +1,7 @@
+from server_local.classes.character import Character
 from .functions import nlp, audio, db, anim
 # import ast
 # from classes import character, context
-primitivePath = "/World/audio2face/PlayerStreaming"
-primitivePathSecondCharacter = "/World/audio2face_01/PlayerStreaming2"
 
 class Params:
     def __init__(self, **kwargs):
@@ -14,7 +13,30 @@ def restart():
 def initialize():
     db.initialize()
 
-def get_response(promptText, sessionID, characterID):
+def animate_character(text,sessionID,characterID, primitivePath):
+    # Fetch session data from DB
+    sessionData = db.fetch_session_data(sessionID)
+    
+    # Generate response
+    CharacterName = db.fetch_character_schema(characterID)["characterName"]
+    print(sessionData)
+    updatedHistory = sessionData["history"]+f"\n{CharacterName}:{text}\n"
+    responseEmotion = nlp.get_emotion(text)
+    # Update history
+    db.update_session_data(sessionID, updatedHistory)
+    
+    # Generate wav
+    wavPath = audio.generate_wav(text, "en-US-TonyNeural", responseEmotion,outputPath="/scripts/ai/ai_")
+    
+    # Execute animation
+    anim.animate(wavPath, primitivePath)
+
+    # audio.cleanup(wavPath, outputPath)
+
+    # Format response
+    responseData = {"responseText": text}
+
+def get_response(promptText, sessionID, characterID, primitivePath):
 
     params = Params()
 
@@ -106,3 +128,6 @@ def create_session(sessionName, sessionDescription, characterIDList):
     responseDict = sessionData
     
     return responseDict
+
+def get_history(sessionID):
+    return db.fetch_session_data(sessionID)["history"]

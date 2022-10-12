@@ -5,21 +5,25 @@
 * Also, work on the front end with Alice.
 
 ## Priority TODO:
+* Selection backend for voice options
 * Screen record video
+* Avatar creation/importing
 * Record + stream blendshapes
-* Unreal integration
-* Selection backend for voice options + emotions
-* Convert input script batch pipeline to work with our video generation scripts
-* Make VidGen Server
-* Methods to upload videos to youtube
-* Multi-character (n-entity) scene methods, just give prim paths
+
+~~* Convert input script batch pipeline to work with our video generation scripts~~
+* Make VidGen Server -> rendering server distribute accross mult computers
+* Methods to upload videos to youtube -> google api integration
+
+~~* Multi-character (n-entity) scene methods, just give prim paths~~
 * Talk to multiple AI simultaneously
+
 
 ## Non-Priority TODO:
 * emotional speech
 * Optimization
 * change azure to streaming for lower latency
 * Connect your own camera to the output video with the AI
+* Unreal integration
 
 ## Web TODO:
 * Figure out dependencies, Docker stuff, versions

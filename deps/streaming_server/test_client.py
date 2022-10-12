@@ -127,8 +127,8 @@ def main():
     if len(data.shape) > 1:
         data = np.average(data, axis=1)
 
-    print(f"Sleeping for {sleep_time} seconds")
-    time.sleep(sleep_time)
+    # print(f"Sleeping for {sleep_time} seconds")
+    # time.sleep(sleep_time)
 
     if 0:  # ADJUST
         # Push the whole audio track at once
