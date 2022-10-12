@@ -12,8 +12,8 @@
 * Convert input script batch pipeline to work with our video generation scripts
 * Make VidGen Server
 * Methods to upload videos to youtube
-* Multi-character (n-entity) scene methods, just give prim paths
 * Talk to multiple AI simultaneously
+* Multi-character (n-entity) scene methods, just give prim paths (DONE)
 
 ## Non-Priority TODO:
 * emotional speech
