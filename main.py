@@ -1,24 +1,26 @@
 # Python program to translate
-# speech to text and text to speech
+# Speech to text and text to speech
 import sys, time, os
 
 from server_local import server
 from server_local.functions import audio, utils, mic
 from server_local.classes import character, session
+import pandas as pd
 
 
-NUM_ACTORS = 2
+NUM_ACTORS = 2 # We can't get more than 5 without lagging usually, modify this if you want more actors in the USD scene
 
-primPaths = ["/World/audio2face/PlayerStreaming"]
+primPaths = ["/World/audio2face/PlayerStreaming"] # Make the primitive path references for the number of actors
 for i in range(NUM_ACTORS-1):
     primPaths.append(f"/World/audio2face_{(i+1):02d}/PlayerStreaming")
 
+VOICES = pd.read_csv("deps/streaming_server/resources/VoiceStyles.csv") # Read the available Microsoft Azure Voices
 def allocate_characters(num_characters,names,descriptions):
     if num_characters > NUM_ACTORS:
         raise Exception("Too many characters for the number of actors.")
     characters = {}
     for i in range(num_characters):
-        characters[names[i]] = character.Character(characterID=i+1,characterName=names[i],characterDescription=descriptions[i],primitivePath=primPaths[i])
+        characters[names[i]] = character.Character(characterID=i+1,characterName=names[i],characterDescription=descriptions[i],primitivePath=primPaths[i],voice=VOICES.sample(n=1)["Voice"].iloc[0])
     return characters
 
 
@@ -57,6 +59,7 @@ def nAIs(lines,sessid=1):
 
     characterIDList = []
     for _,val in characterDict.items():
+        print("#######################",val)
         server.create_character(val.get_characterName(), val.get_characterDescription())
         characterIDList.append(val.get_characterID())
     IdString = ""
@@ -74,7 +77,7 @@ def nAIs(lines,sessid=1):
         if ":" in line:
             name = line.split(":")[0]
             text = line.split(":")[1]
-            server.animate_character(text,sess.get_sessionID(),characterDict[name].get_characterID(),characterDict[name].get_primitivePath())
+            server.animate_character(text,sess.get_sessionID(),characterDict[name].get_characterID(),characterDict[name].get_primitivePath(),characterDict[name].get_voice())
     utils.save_history(server,sess.get_sessionID(),outputDir="scripts/output_text/")
     time.sleep(0.5)
     audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
@@ -105,7 +108,7 @@ def personPlusAi():
         # print("Did you say "+MyText)
         # SpeakText(MyText)
 
-        response = server.get_response(myText, sessionID, characterID)
+        response = server.get_response(myText, sessionID, characterID,primPaths[0])
         # print(response["responseText"])
         # mic.speakText(response["responseText"])
 
@@ -116,7 +119,7 @@ def personPlusAi():
     # Save the audio files to the output directory
     time.sleep(0.5)
     audio.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
-    audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
+    # audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
 
 
 if __name__ == "__main__":
@@ -125,4 +128,4 @@ if __name__ == "__main__":
     #     print(f"Argument {i:>6}: {arg}")
     # personPlusAi()
     dirname = os.path.dirname(__file__)
-    script_input(dirname+"/scripts/input/")
+    script_input(dirname+"scripts/input/")
