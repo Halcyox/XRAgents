@@ -1,6 +1,6 @@
 # This is a class for the character object to represent a character
 class Character():
-    def __init__(self,characterID,characterName,characterDescription,primitivePath):
+    def __init__(self,characterID,characterName,characterDescription,primitivePath,voice):
         """
         :param characterID: the ID of the character
         :type characterID: int
@@ -15,7 +15,10 @@ class Character():
         self.characterName = characterName
         self.characterDescription = characterDescription
         self.primitivePath = primitivePath
+        self.voice = voice
 
+    def __str__(self):
+        return str(self.characterID) + " " + self.characterName + " " + self.characterDescription + " " + self.voice + " " + self.primitivePath
     # getters for all the attributes
     def get_characterID(self):
         return self.characterID
@@ -25,6 +28,9 @@ class Character():
         return self.characterDescription
     def get_primitivePath(self):
         return self.primitivePath
+
+    def get_voice(self):
+        return self.voice
 
         
 

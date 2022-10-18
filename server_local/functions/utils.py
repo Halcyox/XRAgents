@@ -38,3 +38,15 @@ def save_history(server, sessionID,outputDir="recording/script_output/"):
     historyFile.write(history)
     # close the file
     historyFile.close()
+
+
+def format_xml(lang,name,text,style):
+    return f"""\
+<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="{lang}">
+    <voice name="{name}">
+        <mstts:express-as style="{style}">
+            {text}
+        </mstts:express-as>
+    </voice>
+</speak>
+        """

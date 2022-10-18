@@ -4,7 +4,7 @@ from pydub import AudioSegment
 import time
 from pathlib import Path
 
-def generate_wav(text, speaker, style,outputPath=None):
+def generate_wav(text, speaker, style,lang=None,outputPath=None):
     """Generates a wav file from text using the Azure Cognitive Services Speech SDK.""" 
     if outputPath is None:
         outputPath = "/recording/ai/ai_"
@@ -15,11 +15,12 @@ def generate_wav(text, speaker, style,outputPath=None):
     audio_config = speechsdk.audio.AudioOutputConfig(filename= "." + wavPath)
 
     # Set either the `SpeechSynthesisVoiceName` or `SpeechSynthesisLanguage`.
-    speech_config.speech_synthesis_language = "en-US" 
-    speech_config.speech_synthesis_voice_name ="en-US-TonyNeural"
+    speech_config.speech_synthesis_language = "en-US"
+    speech_config.speech_synthesis_voice_name = speaker
 
     # Creates a speech synthesizer.
     synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
+
     synthesizer.speak_text(text)
 
     return wavPath

@@ -5,7 +5,10 @@
 * Also, work on the front end with Alice.
 
 ## Priority TODO:
-* Selection backend for voice options
+* SSML for voice style modification stuff
+
+~~* Selection backend for voice options~~
+* Set up simple server client app to get people to be able to access a server of talking to ai instance
 * Screen record video
 * Avatar creation/importing
 * Record + stream blendshapes
