@@ -13,7 +13,11 @@ def restart():
 def initialize():
     db.initialize()
 
+
 def animate_character(text,sessionID,characterID, primitivePath):
+    """
+    This function is used to animate a character based on the text input
+    """
     # Fetch session data from DB
     sessionData = db.fetch_session_data(sessionID)
     
@@ -37,6 +41,9 @@ def animate_character(text,sessionID,characterID, primitivePath):
     responseData = {"responseText": text}
 
 def get_response(promptText, sessionID, characterID, primitivePath):
+    """
+    This function is used to get a response from the server for a given prompt
+    """
 
     params = Params()
 
@@ -73,6 +80,9 @@ def get_response(promptText, sessionID, characterID, primitivePath):
 
 
 def create_character(characterName, characterDescription):
+    """
+    This function is used to create a character by saving the character schema in the database
+    """
 
     params = Params()
 
@@ -101,6 +111,9 @@ def create_character(characterName, characterDescription):
 
 
 def create_session(sessionName, sessionDescription, characterIDList):
+    """
+    This function is used to create a session by saving the session schema in the database
+    """
 
     params = Params()
 
