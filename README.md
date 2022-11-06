@@ -1,9 +1,46 @@
 # Metahumans Halcyox
 
-## Todos
+# Next time:
+* Work on the batch generation of videos for two characters, and see how far you get.
+* Also, work on the front end with Alice.
+
+## Priority TODO:
+* SSML for voice style modification stuff
+
+~~* Selection backend for voice options~~
+* Set up simple server client app to get people to be able to access a server of talking to ai instance
+* Screen record video
+* Avatar creation/importing
+* Record + stream blendshapes
+
+~~* Convert input script batch pipeline to work with our video generation scripts~~
+* Make VidGen Server -> rendering server distribute accross mult computers
+* Methods to upload videos to youtube -> google api integration
+
+~~* Multi-character (n-entity) scene methods, just give prim paths~~
+* Talk to multiple AI simultaneously
+
+
+## Non-Priority TODO:
 * emotional speech
-Optimization
+* Optimization
 * change azure to streaming for lower latency
+* Connect your own camera to the output video with the AI
+* Unreal integration
+
+## Web TODO:
+* Figure out dependencies, Docker stuff, versions
+* How to put on Amplify?
+* Should we use EC2 instances or what?
+* Website should have registration and billing
+* Token system for AI voice credits
+
+## Marketing TODO:
+* Affiliate marketing application to get other people to grow our software
+
+
+
+
 
 ## LOCAL
 

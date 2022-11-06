@@ -116,7 +116,7 @@ def main():
     url = "localhost:50051"  # ADJUST
 
     # Local input WAV file path
-    audio_fpath = sys.argv[1]
+    audio_fpath = "../.." + sys.argv[1]
 
     # Prim path of the Audio2Face Streaming Audio Player on the stage (were to push the audio data)
     instance_name = sys.argv[2]
@@ -127,8 +127,8 @@ def main():
     if len(data.shape) > 1:
         data = np.average(data, axis=1)
 
-    print(f"Sleeping for {sleep_time} seconds")
-    time.sleep(sleep_time)
+    # print(f"Sleeping for {sleep_time} seconds")
+    # time.sleep(sleep_time)
 
     if 0:  # ADJUST
         # Push the whole audio track at once

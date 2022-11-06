@@ -1,11 +1,7 @@
+from server_local.classes.character import Character
 from .functions import nlp, audio, db, anim
 # import ast
 # from classes import character, context
-primitivePath = "/World/audio2face/PlayerStreaming"
-# primitivePath = "/World/LazyGraph/PlayerStreaming"
-# outputPath = r"C:/Users/phn431/Desktop/digital-humans-backend/wav/output.wav"
-# outputPath = r"C:\Users\Alif Jakir\Documents\GitHub\digital-humans-backend\wav\output.wav"
-outputPath = fr"../../wav/output.wav"
 
 class Params:
     def __init__(self, **kwargs):
@@ -17,28 +13,23 @@ def restart():
 def initialize():
     db.initialize()
 
-def get_response(promptText, sessionID, characterID):
 
-    params = Params()
-
-    params.promptText = promptText
-    params.sessionID = sessionID
-    params.characterID = characterID
-    
-    # Fetch character schema from DB
-    characterSchema = db.fetch_character_schema(params.characterID)
-    
+def animate_character(text,sessionID,characterID, primitivePath):
+    """
+    This function is used to animate a character based on the text input
+    """
     # Fetch session data from DB
-    sessionData = db.fetch_session_data(params.sessionID)
+    sessionData = db.fetch_session_data(sessionID)
     
     # Generate response
-    textResponse, updatedHistory = nlp.generate_response(params.promptText, characterSchema, sessionData)
-    responseEmotion = nlp.get_emotion(textResponse)
+    CharacterName = db.fetch_character_schema(characterID)["characterName"]
+    print(sessionData)
+    updatedHistory = sessionData["history"]+f"\n{CharacterName}:{text}\n"
+    responseEmotion = nlp.get_emotion(text)
     # Update history
-    db.update_session_data(params.sessionID, updatedHistory)
-    
-    # Generate wav
-    wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion, outputPath)
+    db.update_session_data(sessionID, updatedHistory)
+    # Generate wav, selecting wav file
+    wavPath = audio.generate_wav(text, characterVoice, responseEmotion,lang="en-US",outputPath="/scripts/ai/ai_")
     
     # Execute animation
     anim.animate(wavPath, primitivePath)
@@ -46,7 +37,31 @@ def get_response(promptText, sessionID, characterID):
     # audio.cleanup(wavPath, outputPath)
 
     # Format response
-    responseData = {"responseText": textResponse}
+    responseData = {"responseText": text}
+
+def get_response(promptText, sessionID, characterID, primitivePath):
+
+    params = Params()
+    params.promptText = promptText
+    params.sessionID = sessionID
+    params.characterID = characterID
+    
+    characterSchema = db.fetch_character_schema(params.characterID) # Fetch character schema from DB
+    
+    sessionData = db.fetch_session_data(params.sessionID) # Fetch session data from DB
+
+    textResponse, updatedHistory = nlp.generate_response(params.promptText, characterSchema, sessionData) # Generate response
+    responseEmotion = nlp.get_emotion(textResponse)
+    db.update_session_data(params.sessionID, updatedHistory) # Update history
+
+    wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
+    
+    # Execute animation
+    anim.animate(wavPath, primitivePath)
+
+    # audio.cleanup(wavPath, outputPath)
+
+    responseData = {"responseText": textResponse} # Format response
 #     response = send_from_directory(directory='data', filename='audio.mp3')
 #     response.data = responseData
     
@@ -60,18 +75,16 @@ def create_character(characterName, characterDescription):
     params.characterName = characterName
     params.characterDescription = characterDescription
         
-    # Create character schema
-    characterSchema = {
+
+    characterSchema = { # Create character schema
         "characterName": params.characterName,
         "characterDescription": params.characterDescription,
 #         "parameterValues": params.parameterValues
                     }
     
-    # Save character schema in DB
-    db.save_character_schema(characterSchema)
-    
-    # Format response
-    responseDict = characterSchema
+    db.save_character_schema(characterSchema) # Save character schema in DB
+
+    responseDict = characterSchema # Format response to schema
 #     response.data = {
 #         "characterID": characterSchema["characterID"],
 #         "characterDescription": characterSchema["characterDescription"],
@@ -102,10 +115,11 @@ def create_session(sessionName, sessionDescription, characterIDList):
         "initialHistory": params.sessionDescription + " " + " ".join(characterDescriptions)
                     }
     
-    # Save character schema in DB
-    db.save_session_data(sessionData)
+    db.save_session_data(sessionData) # Save character schema in DB
     
-    # Format response
-    responseDict = sessionData
+    responseDict = sessionData # Format response
     
     return responseDict
+
+def get_history(sessionID):
+    return db.fetch_session_data(sessionID)["history"]
