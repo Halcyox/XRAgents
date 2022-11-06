@@ -19,16 +19,6 @@ class Character():
 
     def __str__(self):
         return str(self.characterID) + " " + self.characterName + " " + self.characterDescription + " " + self.voice + " " + self.primitivePath
-    # getters for all the attributes
-    def get_characterID(self):
-        return self.characterID
-    def get_characterName(self):
-        return self.characterName
-    def get_characterDescription(self):
-        return self.characterDescription
-    def get_primitivePath(self):
-        return self.primitivePath
-
     def get_voice(self):
         return self.voice
 

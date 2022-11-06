@@ -60,8 +60,8 @@ def nAIs(lines,sessid=1):
     characterIDList = []
     for _,val in characterDict.items():
         print("#######################",val)
-        server.create_character(val.get_characterName(), val.get_characterDescription())
-        characterIDList.append(val.get_characterID())
+        server.create_character(val.characterName, val.characterDescription)
+        characterIDList.append(val.characterID)
     IdString = ""
     # convert characterList to string
     for characterID in characterIDList:
@@ -77,7 +77,7 @@ def nAIs(lines,sessid=1):
         if ":" in line:
             name = line.split(":")[0]
             text = line.split(":")[1]
-            server.animate_character(text,sess.get_sessionID(),characterDict[name].get_characterID(),characterDict[name].get_primitivePath(),characterDict[name].get_voice())
+            server.animate_character(text,sess.sessionID,characterDict[name].characterID,characterDict[name].get_primitivePath(),characterDict[name].get_voice())
     utils.save_history(server,sess.get_sessionID(),outputDir="scripts/output_text/")
     time.sleep(0.5)
     audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
@@ -126,6 +126,6 @@ if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")
     # for i, arg in enumerate(sys.argv):
     #     print(f"Argument {i:>6}: {arg}")
-    # personPlusAi()
-    dirname = os.path.dirname(__file__)
-    script_input(dirname+"scripts/input/")
+    personPlusAi()
+    #dirname = os.path.dirname(__file__)
+    #script_input(dirname+"scripts/input/")
