@@ -16,15 +16,5 @@ class Session():
         self.sessionDescription = sessionDescription
         self.characterIDs = characterIDs
 
-    # getters for all the attributes
-    def get_sessionID(self):
-        return self.sessionID
-    def get_sessionName(self):
-        return self.sessionName
-    def get_sessionDescription(self):
-        return self.sessionDescription
-    def get_characterIDs(self):
-        return self.characterIDs
-        
     # need a way to have sess
         

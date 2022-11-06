@@ -71,14 +71,14 @@ def nAIs(lines,sessid=1):
         sessionDescription="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.", 
         characterIDs=IdString
     )
-    server.create_session(sess.get_sessionName(), sess.get_sessionDescription(), sess.get_characterIDs())
+    server.create_session(sess.sessionName, sess.sessionDescription, sess.characterIDs)
 
     for line in lines:
         if ":" in line:
             name = line.split(":")[0]
             text = line.split(":")[1]
-            server.animate_character(text,sess.sessionID,characterDict[name].characterID,characterDict[name].get_primitivePath(),characterDict[name].get_voice())
-    utils.save_history(server,sess.get_sessionID(),outputDir="scripts/output_text/")
+            server.animate_character(text,sess.sessionID,characterDict[name].characterID,characterDict[name].primitivePath,characterDict[name].voice)
+    utils.save_history(server,sess.sessionID,outputDir="scripts/output_text/")
     time.sleep(0.5)
     audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 

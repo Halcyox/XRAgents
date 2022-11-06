@@ -19,6 +19,7 @@ class Character():
 
     def __str__(self):
         return str(self.characterID) + " " + self.characterName + " " + self.characterDescription + " " + self.voice + " " + self.primitivePath
+   
     def get_voice(self):
         return self.voice
 
