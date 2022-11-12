@@ -106,7 +106,24 @@
 
 <h3>Answer</h3>
 <pre id="answer-sdp"></pre>
+<div>
+<h1>Videoproxy area</h1>
+Browser base64 Session Description<br />
+<textarea id="localSessionDescription" readonly="true"></textarea> <br />
 
-<script src="client.js"></script>
+Videoproxy base64 Session Description<br />
+<textarea id="remoteSessionDescription"> </textarea> <br/>
+<button onclick="window.startRTCSession()"> Receive from Videoproxy </button><br />
+<button onclick="window.startFaceSession()"> Generate SDP </button><br />
+
+<br />
+
+Video<br />
+<div id="remoteVideos"></div> <br />
+
+Logs<br />
+<div id="logdiv"></div>
+</div>
+<script src="tutor.js"></script>
 </body>
 </html>
