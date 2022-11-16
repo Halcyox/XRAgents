@@ -1,6 +1,8 @@
 use anyhow::Result;
 use clap::{Arg, Command};
 use secrecy::Secret;
+use std::io::Write;
+use std::process::Stdio;
 use std::sync::Arc;
 use tokio::net::UdpSocket;
 use webrtc::api::interceptor_registry::register_default_interceptors;
@@ -45,6 +47,7 @@ async fn main() -> Result<()> {
     } else {
         tracing_subscriber::fmt()
             .event_format(tracing_subscriber::fmt::format().compact())
+            .with_max_level(tracing::Level::ERROR)
             .init();
     }
 
@@ -52,10 +55,11 @@ async fn main() -> Result<()> {
         info!("waiting for a new session...");
         let r = begin_face_session(Secret::new(b"demo ckey".to_vec())).await;
         if let Err(e) = r {
-            error!("error: {}", e);
+            error!("face error: {}", e);
             break;
         } else {
-            warn!("face session ended")
+            warn!("face session ended");
+            break;
         }
     }
     Ok(())
@@ -91,8 +95,10 @@ async fn begin_face_session(ckey: secrecy::SecretVec<u8>) -> anyhow::Result<()> 
         ..Default::default()
     };
 
-    // Open a UDP Listener for RTP Packets on port 8122
-    let listener = UdpSocket::bind("127.0.0.1:8122").await?;
+    // Open a UDP Listener for RTP Packets on port 8123
+    let listener = UdpSocket::bind("127.0.0.1:8123")
+        .await
+        .expect("need RTP listener!");
 
     // Create a new RTCPeerConnection
     let peer_connection = Arc::new(api.new_peer_connection(config).await?);
@@ -156,7 +162,6 @@ async fn begin_face_session(ckey: secrecy::SecretVec<u8>) -> anyhow::Result<()> 
         .await;
 
     // Wait for the offer to be pasted
-    //let line = signal::must_read_stdin()?;
     let desc_data = signal::decode(&String::from_utf8(tokio::fs::read("brws_sess").await?)?)?;
     let offer = serde_json::from_str::<RTCSessionDescription>(&desc_data)?;
 
@@ -181,7 +186,10 @@ async fn begin_face_session(ckey: secrecy::SecretVec<u8>) -> anyhow::Result<()> 
     if let Some(local_desc) = peer_connection.local_description().await {
         let json_str = serde_json::to_string(&local_desc)?;
         let b64 = signal::encode(&json_str);
-        println!("Paste this into a browser:\n{}", b64);
+        println!("paste the sdp now!");
+        let pastechld = std::process::Command::new("pbcopy").stdin(Stdio::piped()).spawn()?;
+        pastechld.stdin.unwrap().write_all(b64.as_bytes())?;
+        let _ = signal::must_read_stdin()?;
     } else {
         error!("generate local_description failed!");
     }
@@ -194,6 +202,7 @@ async fn begin_face_session(ckey: secrecy::SecretVec<u8>) -> anyhow::Result<()> 
             if let Err(err) = video_track.write(&inbound_rtp_packet[..n]).await {
                 if Error::ErrClosedPipe == err {
                     // The peerConnection has been closed.
+                    error!("connection closed");
                 } else {
                     error!("video_track write err: {}", err);
                 }
@@ -203,6 +212,7 @@ async fn begin_face_session(ckey: secrecy::SecretVec<u8>) -> anyhow::Result<()> 
         }
     });
 
+    loop{}
     peer_connection.close().await?;
 
     Ok(())
