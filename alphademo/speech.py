@@ -3,7 +3,7 @@ from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, Med
 
 import av
 import whisper
-
+ 
 wm = whisper.load_model("base.en")
 
 async def speech_consume(track: MediaStreamTrack):
