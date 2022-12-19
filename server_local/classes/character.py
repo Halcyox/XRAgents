@@ -23,5 +23,7 @@ class Character():
     def get_voice(self):
         return self.voice
 
+    
+
         
 
