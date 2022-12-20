@@ -1,9 +1,11 @@
+import collections
 import os
 import azure.cognitiveservices.speech as speechsdk
 from pydub import AudioSegment
 import time
 from pathlib import Path
 
+import typing
 import speech_recognition as sr
 import pyttsx3
 import time
@@ -23,7 +25,7 @@ def generate_wav(text, speaker, style,lang=None,outputPath=None):
     speech_config.speech_synthesis_language = "en-US"
     speech_config.speech_synthesis_voice_name = speaker
 
-    # Creates a speech synthesizer.
+    # Creates a speech synthesizer
     synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
 
     synthesizer.speak_text(text)
@@ -71,45 +73,45 @@ def concat_audio_single_directory(path,outputPath=None):
     print("Concatenated audio files to " + outputPath)
     return audio
 
+
+# --------------------------------------------------------
+# MICROPHONE INITIALIZATION
+# --------------------------------------------------------
+
 r = sr.Recognizer()
-source = sr.Microphone()
-with source as source2:
-    print("Please be quiet while we calibrate for ambient noise...", end='')
-    # wait for a second to let the recognizer
-    # adjust the energy threshold based on
-    # the surrounding noise level
-    # TODO: this is probably broken, let's figure out why sometime?
-    source2.adjust_for_ambient_noise(source2, duration=4)
-    print("done!")
+raw_source = sr.Microphone()
+calibrated_source = raw_source.__enter__()
+print("Please be quiet while I calibrate for ambient noise...",)
+# wait for a second to let the recognizer
+# adjust the energy threshold based on
+# the surrounding noise level
+r.adjust_for_ambient_noise(calibrated_source, duration=4)
+print("done initializing microphone!")
 
-# Function to convert text to speech
-def speakText(command):
-    # Initialize the engine
-    engine = pyttsx3.init()
-    engine.say(command)
-    engine.runAndWait()
+# --------------------------------------------------------
+# END MICROPHONE INITIALIZATION
+# --------------------------------------------------------
 
-def startListen():
+ListenRecord = collections.namedtuple("ListenRecord", field_names=("file_handle", "path", "spoken_content"))
+
+
+def listen_until_quiet_again() -> ListenRecord:
+    """This listens to one chunk of user input, returning file handle to """
     try:
-        # this will prolly be busted too TODO
-        with source as source2:
-            #listens for the user's input
-            print("Listening...")
-            audio2 = r.listen(source2, timeout=5 )
+        print("Listening...") # The microphone is now listening for input
+        audio2 = r.listen(calibrated_source, timeout=5 )
 
-            # save the audio file to a folder in /recording/ with the name being timestamped
-            fileName = "recording/user/" + "Convo_" + str(time.time()) + ".wav"
-            with open(fileName, "wb") as f:
-                f.write(audio2.get_wav_data())
+        # save the audio file to a folder in ./recording/ with the name being timestamped
+        fileName = "recording/user/" + "Convo_" + str(time.time()) + ".wav"
+        f = open(fileName, "wb")
+        f.write(audio2.get_wav_data())
+        f.seek(0)
+        # Using google to recognize audio
+        # TODO, replace with whisper
+        MyText = r.recognize_google(audio2)
+        MyText = MyText.lower()
 
-            # Using google to recognize audio
-            MyText = r.recognize_google(audio2)
-            MyText = MyText.lower()
-
-
-            return MyText
-	except sr.RequestError as e:
+        return ListenRecord(file_handle=f, spoken_content=MyText, path=fileName)
+    except sr.RequestError as e:
         print("Could not request results; {0}".format(e))
-
-	except sr.UnknownValueError:
-        print("unknown value error")
+        raise e

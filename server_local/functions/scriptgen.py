@@ -1,6 +1,6 @@
 import os
-import utils]
-import audio
+import utils
+import audio1
 
 # This file holds methods for mass generation of audio files from scripts
 
@@ -39,13 +39,11 @@ def parseScripts(inputDir=None, outputDir=None):
             emotionList.append()
     
 
-def 
-
 # return an object that holds one script, and the script object contains all the information with the actor, lines, and we return an array of script objects
 
     # The following is the code for generating the audio file
     # We want to be able to control the speaker and the emotion of the audio file quickly
-    wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion)
+    wavPath = audio1.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion)
 
 
 

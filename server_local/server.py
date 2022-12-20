@@ -1,5 +1,5 @@
 from server_local.classes.character import Character
-from .functions import nlp, audio, db, anim
+from .functions import nlp, audio1, db, anim
 # import ast
 # from classes import character, context
 
@@ -15,32 +15,30 @@ def initialize():
 
 
 def animate_character(text,sessionID,characterID, primitivePath):
-    """
-    This function is used to animate a character based on the text input
-    """
+    """Used to animate a specific character based on the text input onto a specific animation node's audio stream listener"""
     # Fetch session data from DB
     sessionData = db.fetch_session_data(sessionID)
     
     # Generate response
     CharacterName = db.fetch_character_schema(characterID)["characterName"]
-    print(sessionData)
+    # print(sessionData)
     updatedHistory = sessionData["history"]+f"\n{CharacterName}:{text}\n"
     responseEmotion = nlp.get_emotion(text)
     # Update history
     db.update_session_data(sessionID, updatedHistory)
     # Generate wav, selecting wav file
-    wavPath = audio.generate_wav(text, characterVoice, responseEmotion,lang="en-US",outputPath="/scripts/ai/ai_")
+    wavPath = audio1.generate_wav(text, responseEmotion,lang="en-US",outputPath="/scripts/ai/ai_")
     
     # Execute animation
     anim.animate(wavPath, primitivePath)
 
-    # audio.cleanup(wavPath, outputPath)
+    # audio1.cleanup(wavPath, outputPath)
 
     # Format response
     responseData = {"responseText": text}
 
 def get_response(promptText, sessionID, characterID, primitivePath):
-
+    """"""
     params = Params()
     params.promptText = promptText
     params.sessionID = sessionID
@@ -54,17 +52,17 @@ def get_response(promptText, sessionID, characterID, primitivePath):
     responseEmotion = nlp.get_emotion(textResponse)
     db.update_session_data(params.sessionID, updatedHistory) # Update history
 
-    wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
+    wavPath = audio1.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
     
     # Execute animation
     anim.animate(wavPath, primitivePath)
 
-    # audio.cleanup(wavPath, outputPath)
+    # audio1.cleanup(wavPath, outputPath)
 
     responseData = {"responseText": textResponse} # Format response
-#     response = send_from_directory(directory='data', filename='audio.mp3')
+#     response = send_from_directory(directory='data', filename='audio1.mp3')
 #     response.data = responseData
-    
+
     return responseData
 
 

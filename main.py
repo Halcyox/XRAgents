@@ -1,9 +1,10 @@
+
 # Python program to translate
 # Speech to text and text to speech
 import sys, time, os
 
 from server_local import server
-from server_local.functions import audio, utils, mic
+from server_local.functions import audio1, utils
 from server_local.classes import character, session
 import pandas as pd
 
@@ -22,7 +23,6 @@ def allocate_characters(num_characters,names,descriptions):
     for i in range(num_characters):
         characters[names[i]] = character.Character(characterID=i+1,characterName=names[i],characterDescription=descriptions[i],primitivePath=primPaths[i],voice=VOICES.sample(n=1)["Voice"].iloc[0])
     return characters
-
 
 def script_input(inputDir):
     # load all text files in the input directory into a list
@@ -80,7 +80,7 @@ def nAIs(lines,sessid=1):
             server.animate_character(text,sess.sessionID,characterDict[name].characterID,characterDict[name].primitivePath,characterDict[name].voice)
     utils.save_history(server,sess.sessionID,outputDir="scripts/output_text/")
     time.sleep(0.5)
-    audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
+    audio1.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 
 def personPlusAi():
     server.restart()
@@ -92,34 +92,28 @@ def personPlusAi():
     server.create_character("Avatar", "Avatar is a wise philosopher who understands the world in complex yet beautiful, meta-cognitive and cross-paradigmatic ways. He speaks with the eloquence of a great writer, weaving connections through networks of intricate ideas.")
     server.create_session("Contemplations on Entities", "The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.", "1")
 
+    # Create directories
+    utils.create_directory("recording/output/", False) # Output should not be cleared
+    utils.create_directory("recording/ai/") # Clears temporary files there
+    utils.create_directory("recording/user/") # Clears temporary files there
 
-    ####################
-    utils.create_directory("recording/output/", False)
-    utils.create_directory("recording/ai/")
-    utils.create_directory("recording/user/")
+    convoFlag = True # conversation will loop until user wants to exit
+    while(convoFlag): # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
+        latestRecord = audio1.listen_until_quiet_again()
+        print(latestRecord.spoken_content)
 
-    # loop condition flag
-    convoFlag = True 
-
-    while(convoFlag):
-
-        myText = mic.startListen()
-        print(myText)
-        # print("Did you say "+MyText)
-        # SpeakText(MyText)
-
-        response = server.get_response(myText, sessionID, characterID,primPaths[0])
-        # print(response["responseText"])
-        # mic.speakText(response["responseText"])
-
-        if(myText == "quit" or myText == None):
+        if(latestRecord.spoken_content == "quit" or latestRecord.spoken_content is None): # Trigger for ending convo, will then concatenate
             convoFlag = False
             break
 
+        latestRecord.file_handle.close()
+        response = server.get_response(latestRecord.spoken_content, sessionID, characterID,primPaths[0])
+
+
     # Save the audio files to the output directory
-    time.sleep(0.5)
-    audio.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
-    # audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
+    #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
+    audio1.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
+    audio1.cleanup("recording/ai/", "recording/user/") # delete the temporary files
 
 
 if __name__ == "__main__":
