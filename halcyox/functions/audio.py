@@ -18,7 +18,6 @@ def generate_wav(text, speaker, style,lang=None,outputPath=None):
     speech_config = speechsdk.SpeechConfig(subscription="bfc08e214f6c48cebcde668a433196d3", region="eastus")
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
     wavPath = outputPath + str(time.time()) + ".wav" # the path of the current audio file
-
     audio_config = speechsdk.audio.AudioOutputConfig(filename= "." + wavPath)
 
     # Set either the `SpeechSynthesisVoiceName` or `SpeechSynthesisLanguage`.
@@ -27,7 +26,6 @@ def generate_wav(text, speaker, style,lang=None,outputPath=None):
 
     # Creates a speech synthesizer
     synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
-
     synthesizer.speak_text(text)
 
     return wavPath

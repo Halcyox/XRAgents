@@ -51,5 +51,3 @@ def parseScripts(inputDir=None, outputDir=None):
 
 totalVid = len(content) # sets the total length of the video(lines)
 for i in range(1, len(content)): # loops through the lines
-    
-    

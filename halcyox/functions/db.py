@@ -57,13 +57,13 @@ def fetch_session_data(sessionID):
 def save_session_data(sessionData):
     """Session is saved"""
     # sessionData in the form: {sessionID: ..., sessionName: ..., sessionDescription: ...}
-        sessionName = sessionData["sessionName"]
-        sessionDescription = sessionData["sessionDescription"]
-        characterIDList = sessionData["characterIDList"]
-        initialHistory = sessionData["initialHistory"]
+    sessionName = sessionData["sessionName"]
+    sessionDescription = sessionData["sessionDescription"]
+    characterIDList = sessionData["characterIDList"]
+    initialHistory = sessionData["initialHistory"]
 
-        cursor.execute(f"INSERT INTO sessions (sessionName, sessionDescription, characterIDList, history) VALUES (?, ?, ?, ?)", [sessionName, sessionDescription, characterIDList, initialHistory])
-        conn.commit()
+    cursor.execute(f"INSERT INTO sessions (sessionName, sessionDescription, characterIDList, history) VALUES (?, ?, ?, ?)", [sessionName, sessionDescription, characterIDList, initialHistory])
+    conn.commit()
 
 def update_session_data(sessionID, newHistory):
     """Update existing session data"""

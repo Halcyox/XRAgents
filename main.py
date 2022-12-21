@@ -3,12 +3,12 @@
 # Speech to text and text to speech
 import sys, time, os
 
-from server_local import server
-from server_local.functions import audio, utils
-from server_local.classes import character, session
+from halcyox import server
+from halcyox.functions import audio, utils
+from halcyox.classes import character, session
 import pandas as pd
 
-
+import typing
 NUM_ACTORS = 2 # We can't get more than 5 without lagging usually, modify this if you want more actors in the USD scene
 
 primPaths = ["/World/audio2face/PlayerStreaming"] # Make the primitive path references for the number of actors
@@ -16,16 +16,27 @@ for i in range(NUM_ACTORS-1):
     primPaths.append(f"/World/audio2face_{(i+1):02d}/PlayerStreaming")
 
 VOICES = pd.read_csv("deps/streaming_server/resources/VoiceStyles.csv") # Read the available Microsoft Azure Voices
-def allocate_characters(num_characters,names,descriptions):
+from dataclasses import dataclass
+
+@dataclass
+class SceneDescription:
+    num_characters: int
+    names: list[str]
+    descs: dict[typing.Any,typing.Any]
+
+def allocate_characters(num_characters:int,names:list[str],descriptions: list[str]):
     if num_characters > NUM_ACTORS:
         raise Exception("Too many characters for the number of actors.")
     characters = {}
     for i in range(num_characters):
-        characters[names[i]] = character.Character(characterID=i+1,characterName=names[i],characterDescription=descriptions[i],primitivePath=primPaths[i],voice=VOICES.sample(n=1)["Voice"].iloc[0])
+        characters[names[i]] = character.Character(names[i], desc=descriptions[i], id=0,
+                                                   voice=VOICES.sample(n=1)["Voices"].iloc[0],
+                                                   primitivePath=primPaths[i])
     return characters
 
 def script_input(inputDir):
-    # load all text files in the input directory into a list
+    """load all text files in the input directory into a list
+    and generate a conversation using it and audio2face"""
     inputFiles = []
     for file in os.listdir(inputDir):
         if file.endswith(".txt"):
@@ -37,7 +48,6 @@ def script_input(inputDir):
             lines = f.readlines()
             nAIs(lines,index+1)
                 
-
 def nAIs(lines,sessid=1):
     #######################
     utils.create_directory("scripts/output_audio/", False)
@@ -62,16 +72,13 @@ def nAIs(lines,sessid=1):
         print("#######################",val)
         server.create_character(val.characterName, val.characterDescription)
         characterIDList.append(val.characterID)
-    IdString = ""
-    # convert characterList to string
-    for characterID in characterIDList:
-        IdString += str(characterID)
-    sess = session.Session(sessionID=sessid,
-        sessionName="Contemplations on Entities", 
-        sessionDescription="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.", 
-        characterIDs=IdString
-    )
-    server.create_session(sess.sessionName, sess.sessionDescription, sess.characterIDs)
+
+    sess = session.Session(id=0,
+        name="Contemplations on Entities",
+        desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+        characters=[character.Avatar])
+
+    # inform a server about our server someday
 
     for line in lines:
         if ":" in line:
@@ -83,15 +90,11 @@ def nAIs(lines,sessid=1):
     audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 
 def personPlusAi():
-    server.restart()
-    # print("Server restarted.")
-
-    sessionID = 1
-    characterID = 1
-    server.initialize()
-    server.create_character("Avatar", "Avatar is a wise philosopher who understands the world in complex yet beautiful, meta-cognitive and cross-paradigmatic ways. He speaks with the eloquence of a great writer, weaving connections through networks of intricate ideas.")
-    server.create_session("Contemplations on Entities", "The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.", "1")
-
+    avatar = character.Avatar
+    sess = session.Session(id=1,
+                           name="Contemplations on Entities",
+                           desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+                           characters=[avatar])
     # Create directories
     utils.create_directory("recording/output/", False) # Output should not be cleared
     utils.create_directory("recording/ai/") # Clears temporary files there
@@ -107,8 +110,7 @@ def personPlusAi():
             break
 
         latestRecord.file_handle.close()
-        response = server.get_response(latestRecord.spoken_content, sessionID, characterID,primPaths[0])
-
+        response = sess.get_response(sess.characters[0], latestRecord.spoken_content, primPaths[0])
 
     # Save the audio files to the output directory
     #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
