@@ -4,7 +4,7 @@
 import sys, time, os
 
 from server_local import server
-from server_local.functions import audio1, utils
+from server_local.functions import audio, utils
 from server_local.classes import character, session
 import pandas as pd
 
@@ -80,7 +80,7 @@ def nAIs(lines,sessid=1):
             server.animate_character(text,sess.sessionID,characterDict[name].characterID,characterDict[name].primitivePath,characterDict[name].voice)
     utils.save_history(server,sess.sessionID,outputDir="scripts/output_text/")
     time.sleep(0.5)
-    audio1.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
+    audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 
 def personPlusAi():
     server.restart()
@@ -99,7 +99,7 @@ def personPlusAi():
 
     convoFlag = True # conversation will loop until user wants to exit
     while(convoFlag): # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
-        latestRecord = audio1.listen_until_quiet_again()
+        latestRecord = audio.listen_until_quiet_again()
         print(latestRecord.spoken_content)
 
         if(latestRecord.spoken_content == "quit" or latestRecord.spoken_content is None): # Trigger for ending convo, will then concatenate
@@ -112,8 +112,8 @@ def personPlusAi():
 
     # Save the audio files to the output directory
     #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
-    audio1.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
-    audio1.cleanup("recording/ai/", "recording/user/") # delete the temporary files
+    audio.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
+    audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
 
 
 if __name__ == "__main__":

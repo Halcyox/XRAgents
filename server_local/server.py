@@ -1,5 +1,5 @@
 from server_local.classes.character import Character
-from .functions import nlp, audio1, db, anim
+from .functions import nlp, audio, db, anim
 # import ast
 # from classes import character, context
 
@@ -27,12 +27,12 @@ def animate_character(text,sessionID,characterID, primitivePath):
     # Update history
     db.update_session_data(sessionID, updatedHistory)
     # Generate wav, selecting wav file
-    wavPath = audio1.generate_wav(text, responseEmotion,lang="en-US",outputPath="/scripts/ai/ai_")
+    wavPath = audio.generate_wav(text, responseEmotion,lang="en-US",outputPath="/scripts/ai/ai_")
     
     # Execute animation
     anim.animate(wavPath, primitivePath)
 
-    # audio1.cleanup(wavPath, outputPath)
+    # audio.cleanup(wavPath, outputPath)
 
     # Format response
     responseData = {"responseText": text}
@@ -52,15 +52,15 @@ def get_response(promptText, sessionID, characterID, primitivePath):
     responseEmotion = nlp.get_emotion(textResponse)
     db.update_session_data(params.sessionID, updatedHistory) # Update history
 
-    wavPath = audio1.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
+    wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
     
     # Execute animation
     anim.animate(wavPath, primitivePath)
 
-    # audio1.cleanup(wavPath, outputPath)
+    # audio.cleanup(wavPath, outputPath)
 
     responseData = {"responseText": textResponse} # Format response
-#     response = send_from_directory(directory='data', filename='audio1.mp3')
+#     response = send_from_directory(directory='data', filename='audio.mp3')
 #     response.data = responseData
 
     return responseData

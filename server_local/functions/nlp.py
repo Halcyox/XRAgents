@@ -4,18 +4,6 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-# import json
-# import copy
-# import numpy as np
-# import spacy
-# import tensorflow as tf
-# import tensorflow_hub as hub
-# from collections import OrderedDict
-
-# sp = spacy.load('en_core_web_sm')
-# module_url = "https://tfhub.dev/google/universal-sentence-encoder/4"
-# model = hub.load(module_url)
-# print("module %s loaded" % module_url
 
 def get_completion(prompt):
     completion = openai.Completion.create(
