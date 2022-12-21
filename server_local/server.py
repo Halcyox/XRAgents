@@ -38,7 +38,7 @@ def animate_character(text,sessionID,characterID, primitivePath):
     responseData = {"responseText": text}
 
 def get_response(promptText, sessionID, characterID, primitivePath):
-    """"""
+    """Given a input promptText, will give you"""
     params = Params()
     params.promptText = promptText
     params.sessionID = sessionID
@@ -64,7 +64,6 @@ def get_response(promptText, sessionID, characterID, primitivePath):
 #     response.data = responseData
 
     return responseData
-
 
 def create_character(characterName, characterDescription):
 

@@ -7,13 +7,14 @@ conn.row_factory = sqlite3.Row
 cursor = conn.cursor()
 
 def clear():
+    """Empties out the database"""
     cursor.execute("DROP TABLE IF EXISTS characters")
     cursor.execute("DROP TABLE IF EXISTS sessions")
     conn.commit()
 
 def initialize():
-    """Creates initial character and session database"""
-    #create characters table
+    """Creates character and session database tables"""
+    # create characters table
     cursor.execute("CREATE TABLE IF NOT EXISTS characters (characterID INTEGER PRIMARY KEY, characterName TEXT NOT NULL, characterDescription TEXT NOT NULL, parameterValues TEXT)")
     # create sessions table
     cursor.execute("CREATE TABLE IF NOT EXISTS sessions (sessionID INTEGER PRIMARY KEY, sessionName TEXT NOT NULL, sessionDescription TEXT NOT NULL, characterIDList TEXT NOT NULL, history TEXT)")
@@ -29,6 +30,7 @@ def get_table(tableName):
 # --------------------------------------------------------
 
 def fetch_character_schema(characterID):
+    """Get a character schema"""
     characterRows = cursor.execute(f"SELECT * FROM characters WHERE characterID = {characterID}").fetchall()
     characterSchema = [dict(r) for r in characterRows][0]
     # print("characterSchema", characterSchema)
