@@ -1,10 +1,12 @@
 from dataclasses import dataclass
+import time
 from .functions import nlp, audio, anim
 from dataclasses import dataclass
 import enum
 from halcyox.functions import nlp, audio, anim
 from typing import Optional
 import os
+from log_calls import log_calls
 class NeuralTTSSelector(enum.Enum):
     TONY = "en-US-TonyNeural"
 
@@ -40,6 +42,7 @@ class Session():
     desc : str
     history: str = ""
 
+    @log_calls()
     def animate(self, character: Character, charLine: str):
         """Used to animate a specific character based on the text input
         onto a specific animation node's audio stream listener"""
@@ -77,10 +80,13 @@ class Session():
     def save_history(self, outputDir="recording/script_output/"):
         """Save the conversation to a history file in recording/script_output/{hid}_history.txt"""
         dirname = os.path.dirname(__file__)
-        historyPath = os.path.join(dirname,f"../../{outputDir}", f"{str(self.id)}_history.txt")
+        histdir = os.path.join(dirname,f"../{outputDir}")
+        if not os.path.exists(histdir):
+            os.mkdir(histdir)
+        historyPath = os.path.join(histdir, f"{str(self.id) + str(time.time())}_history.txt")
         with open(historyPath, "w") as historyFile:
             historyFile.write(self.history)
-
+            print(self.history)
 
     def _model_does_reply_thingy(self, promptText:str, character: Character):
         """User gives an input to GPT3, and gets a response and the updated history."""

@@ -15,6 +15,7 @@ def generate_wav(text, speaker, lang=None,outputPath=None):
     """Generates a wav file from text using the Azure Cognitive Services Speech SDK."""
     if outputPath is None:
         outputPath = "/recording/ai/ai_"
+    #TODO:API TOKEN
     speech_config = speechsdk.SpeechConfig(subscription="bfc08e214f6c48cebcde668a433196d3", region="eastus")
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
     wavPath = outputPath + str(time.time()) + ".wav" # the path of the current audio file
@@ -26,7 +27,7 @@ def generate_wav(text, speaker, lang=None,outputPath=None):
 
     # Creates a speech synthesizer
     synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
-    #synthesizer.speak_text(text)
+    synthesizer.speak_text(text)
 
     return wavPath
 
@@ -62,6 +63,7 @@ def concat_audio_single_directory(path,outputPath=None):
     # Concatenate the audio files, starting with the human Paths, alternating with the ai paths.
     audio = AudioSegment.empty()
     for i in range(len(paths)):
+        time.sleep(1)
         audio += AudioSegment.from_file(paths[i])
 
     if outputPath is None: # default output path
@@ -80,6 +82,7 @@ r = sr.Recognizer()
 raw_source = sr.Microphone()
 _calibrated_source = None
 def calibrate():
+    global _calibrated_source
     if _calibrated_source is None:
         _calibrated_source = raw_source.__enter__()
         print("Please be quiet while I calibrate for ambient noise...",)
