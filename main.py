@@ -24,13 +24,13 @@ class SceneDescription:
     names: list[str]
     descs: dict[typing.Any,typing.Any]
 
-def allocate_characters(num_characters:int,names:list[str],descriptions: list[str]):
+def allocate_characters(num_characters:int,names:list[str],descriptions: list[str]) -> dict[str,Character]:
     if num_characters > NUM_ACTORS:
         raise Exception("Too many characters for the number of actors.")
     characters = {}
     for i in range(num_characters):
         characters[names[i]] = Character(names[i], desc=descriptions[i], id=0,
-                                                   voice=VOICES.sample(n=1)["Voices"].iloc[0],
+                                                   voice=VOICES.sample(n=1)["Voice"].iloc[0],
                                                    primitivePath=primPaths[i])
     return characters
 
@@ -62,12 +62,7 @@ def nAIs(lines,sessid=1):
             name = line.split(":")[0]
             if name not in characters:
                 characters[name] = 1
-    characterDict = allocate_characters(len(characters),list(characters.keys()),["",""])
-
-    characterIDList = []
-    for _,val in characterDict.items():
-        print("#######################",val)
-        characterIDList.append(val.characterID)
+    characters = allocate_characters(len(characters),list(characters.keys()),["",""])
 
     sess = Session(id=0,
         name="Contemplations on Entities",
@@ -80,7 +75,7 @@ def nAIs(lines,sessid=1):
         if ":" in line:
             name = line.split(":")[0]
             text = line.split(":")[1]
-            sess.animate(characterDict[name], charLine=text)
+            sess.animate(characters[name], charLine=text)
 
     sess.save_history(outputDir="scripts/output_text/")
     time.sleep(0.5)
@@ -121,4 +116,4 @@ if __name__ == "__main__":
     #     print(f"Argument {i:>6}: {arg}")
     #personPlusAi()
     dirname = os.path.dirname(__file__)
-    script_input(dirname+"scripts/input/")
+    script_input(os.path.join(dirname,"scripts/input/"))

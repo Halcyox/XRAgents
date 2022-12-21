@@ -11,7 +11,7 @@ import pyttsx3
 import time
 import os
 
-def generate_wav(text, speaker, style,lang=None,outputPath=None):
+def generate_wav(text, speaker, lang=None,outputPath=None):
     """Generates a wav file from text using the Azure Cognitive Services Speech SDK."""
     if outputPath is None:
         outputPath = "/recording/ai/ai_"
@@ -26,7 +26,7 @@ def generate_wav(text, speaker, style,lang=None,outputPath=None):
 
     # Creates a speech synthesizer
     synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
-    synthesizer.speak_text(text)
+    #synthesizer.speak_text(text)
 
     return wavPath
 
@@ -78,17 +78,17 @@ def concat_audio_single_directory(path,outputPath=None):
 
 r = sr.Recognizer()
 raw_source = sr.Microphone()
-calibrated_source = raw_source.__enter__()
-print("Please be quiet while I calibrate for ambient noise...",)
-# wait for a second to let the recognizer
-# adjust the energy threshold based on
-# the surrounding noise level
-r.adjust_for_ambient_noise(calibrated_source, duration=4)
-print("done initializing microphone!")
-
-# --------------------------------------------------------
-# END MICROPHONE INITIALIZATION
-# --------------------------------------------------------
+_calibrated_source = None
+def calibrate():
+    if _calibrated_source is None:
+        _calibrated_source = raw_source.__enter__()
+        print("Please be quiet while I calibrate for ambient noise...",)
+        # wait for a second to let the recognizer
+        # adjust the energy threshold based on
+        # the surrounding noise level
+        r.adjust_for_ambient_noise(_calibrated_source, duration=2)
+        print("done initializing microphone!")
+    return _calibrated_source
 
 ListenRecord = collections.namedtuple("ListenRecord", field_names=("file_handle", "path", "spoken_content"))
 
@@ -97,7 +97,7 @@ def listen_until_quiet_again() -> ListenRecord:
     """This listens to one chunk of user input, returning file handle to """
     try:
         print("Listening...") # The microphone is now listening for input
-        audio2 = r.listen(calibrated_source, timeout=5 )
+        audio2 = r.listen(calibrate(), timeout=5 )
 
         # save the audio file to a folder in ./recording/ with the name being timestamped
         fileName = "recording/user/" + "Convo_" + str(time.time()) + ".wav"
