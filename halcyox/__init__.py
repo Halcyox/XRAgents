@@ -83,6 +83,7 @@ class Session():
 
 
     def _model_does_reply_thingy(self, promptText:str, character: Character):
+        """User gives a text input, and gets a c"""
         # format users input into the narrative metaformat
         narrative_next = f"\nYou: {promptText}\n{character.name}:"
         responsePrompt = self.history + narrative_next
@@ -92,7 +93,6 @@ class Session():
         #     You: {promptText}
         #     {characterName}:"""
         response = nlp.get_completion(self.desc + responsePrompt)
-        print(response + " The model does a reply thingy")
 
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
