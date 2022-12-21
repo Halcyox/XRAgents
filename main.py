@@ -119,6 +119,6 @@ if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")
     # for i, arg in enumerate(sys.argv):
     #     print(f"Argument {i:>6}: {arg}")
-    personPlusAi()
-    #dirname = os.path.dirname(__file__)
-    #script_input(dirname+"scripts/input/")
+    #personPlusAi()
+    dirname = os.path.dirname(__file__)
+    script_input(dirname+"scripts/input/")

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from .functions import nlp, audio, anim
 from dataclasses import dataclass
 import enum
-from halcyox.functions import nlp, audio, db, anim
+from halcyox.functions import nlp, audio, anim
 from typing import Optional
 import os
 class NeuralTTSSelector(enum.Enum):
@@ -83,7 +83,7 @@ class Session():
 
 
     def _model_does_reply_thingy(self, promptText:str, character: Character):
-        """User gives a text input, and gets a c"""
+        """User gives an input to GPT3, and gets a response and the updated history."""
         # format users input into the narrative metaformat
         narrative_next = f"\nYou: {promptText}\n{character.name}:"
         responsePrompt = self.history + narrative_next
