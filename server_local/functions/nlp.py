@@ -6,10 +6,11 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def get_completion(prompt):
+    """Send in a prompt and get a completion"""
     completion = openai.Completion.create(
-        engine = "davinci",
+        engine = "text-davinci-002",
         temperature = 0.8,
-        max_tokens = 200,
+        max_tokens = 150,
         prompt = prompt,
         frequency_penalty = 1.5,
         stop = ["\n", "###", "You:"]
@@ -66,9 +67,9 @@ Your Father: Of course, son.
 ###
 
 """
-    responsePrompt = sessionData["history"] + f"""
-You: {promptText}
-{characterName}:"""
+    # format users input into the narrative metaformat
+    narrative_next = f"\nYou: {promptText}\n{characterName}:"
+    responsePrompt = sessionData["history"] + narrative_next
 #     responsePrompt = f"""
 #     {sessionData[sessionDescription]}
 #     {characterDescription}
@@ -81,24 +82,6 @@ You: {promptText}
 #     print("DEBUG RESPONSE: ", response)
 
 #     responseEmotion = get_completion(f"""
-#     Sentence:
-#     Emotion:
-#     ###
-#     Sentence:
-#     Emotion:
-#     ###
-#     Sentence:
-#     Emotion:
-#     ###
-#     Sentence:
-#     Emotion:
-#     ###
-#     Sentence:
-#     Emotion:
-#     ###
-#     Sentence:
-#     Emotion:
-#     ###
 #     Sentence:
 #     Emotion:
 #     ###
