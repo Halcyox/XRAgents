@@ -1,0 +1,5 @@
+*.pyc
+target
+*.wav
+*.txt
+.fleet
