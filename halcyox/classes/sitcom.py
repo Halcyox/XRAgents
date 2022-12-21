@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from .character import Character
+from halcyox import Character
 import typing
 
 @dataclass

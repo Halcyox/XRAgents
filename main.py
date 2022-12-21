@@ -3,9 +3,9 @@
 # Speech to text and text to speech
 import sys, time, os
 
-from halcyox import server
+import halcyox
+from halcyox import Character, Session, Avatar
 from halcyox.functions import audio, utils
-from halcyox.classes import character, session
 import pandas as pd
 
 import typing
@@ -29,7 +29,7 @@ def allocate_characters(num_characters:int,names:list[str],descriptions: list[st
         raise Exception("Too many characters for the number of actors.")
     characters = {}
     for i in range(num_characters):
-        characters[names[i]] = character.Character(names[i], desc=descriptions[i], id=0,
+        characters[names[i]] = Character(names[i], desc=descriptions[i], id=0,
                                                    voice=VOICES.sample(n=1)["Voices"].iloc[0],
                                                    primitivePath=primPaths[i])
     return characters
@@ -55,9 +55,6 @@ def nAIs(lines,sessid=1):
     utils.create_directory("scripts/ai/")
     #######################
 
-    server.restart()
-    server.initialize()
-
     # get the number of characters and their names
     characters = {}
     for line in lines:
@@ -70,13 +67,12 @@ def nAIs(lines,sessid=1):
     characterIDList = []
     for _,val in characterDict.items():
         print("#######################",val)
-        server.create_character(val.characterName, val.characterDescription)
         characterIDList.append(val.characterID)
 
-    sess = session.Session(id=0,
+    sess = Session(id=0,
         name="Contemplations on Entities",
         desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-        characters=[character.Avatar])
+        )
 
     # inform a server about our server someday
 
@@ -84,33 +80,34 @@ def nAIs(lines,sessid=1):
         if ":" in line:
             name = line.split(":")[0]
             text = line.split(":")[1]
-            server.animate_character(text,sess.sessionID,characterDict[name].characterID,characterDict[name].primitivePath,characterDict[name].voice)
-    utils.save_history(server,sess.sessionID,outputDir="scripts/output_text/")
+            sess.animate(characterDict[name], charLine=text)
+
+    sess.save_history(outputDir="scripts/output_text/")
     time.sleep(0.5)
     audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 
 def personPlusAi():
-    avatar = character.Avatar
-    sess = session.Session(id=1,
-                           name="Contemplations on Entities",
-                           desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-                           characters=[avatar])
+    avatar = Avatar
+    sess = Session(id=1,
+        name="Contemplations on Entities",
+        desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+    )
     # Create directories
     utils.create_directory("recording/output/", False) # Output should not be cleared
     utils.create_directory("recording/ai/") # Clears temporary files there
     utils.create_directory("recording/user/") # Clears temporary files there
 
-    convoFlag = True # conversation will loop until user wants to exit
-    while(convoFlag): # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
-        latestRecord = audio.listen_until_quiet_again()
-        print(latestRecord.spoken_content)
+    shouldntExit = True # conversation will loop until user wants to exit
+    while shouldntExit: # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
+        latest_record = audio.listen_until_quiet_again()
+        print(latest_record.spoken_content)
 
-        if(latestRecord.spoken_content == "quit" or latestRecord.spoken_content is None): # Trigger for ending convo, will then concatenate
-            convoFlag = False
+        if(latest_record.spoken_content == "quit" or latest_record.spoken_content is None): # Trigger for ending convo, will then concatenate
+            shouldntExit = False
             break
 
-        latestRecord.file_handle.close()
-        response = sess.get_response(sess.characters[0], latestRecord.spoken_content, primPaths[0])
+        latest_record.file_handle.close()
+        response = sess.get_response(avatar, latest_record.spoken_content, primPaths[0])
 
     # Save the audio files to the output directory
     #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
