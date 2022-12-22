@@ -11,12 +11,14 @@ import pyttsx3
 import time
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 def generate_wav(text, speaker, lang=None,outputPath=None):
     """Generates a wav file from text using the Azure Cognitive Services Speech SDK."""
     if outputPath is None:
         outputPath = "/recording/ai/ai_"
-    #TODO:API TOKEN
-    speech_config = speechsdk.SpeechConfig(subscription="bfc08e214f6c48cebcde668a433196d3", region="eastus")
+    speech_config = speechsdk.SpeechConfig(subscription=os.getenv("AZURE_API_KEY"), region="eastus")
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
     wavPath = outputPath + str(time.time()) + ".wav" # the path of the current audio file
     audio_config = speechsdk.audio.AudioOutputConfig(filename= "." + wavPath)
