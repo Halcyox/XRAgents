@@ -110,7 +110,7 @@ def listen_until_quiet_again() -> ListenRecord:
         f.write(audio2.get_wav_data())
         f.seek(0)
         # Using google to recognize audio
-        # TODO, replace with whisper
+        # TODO, replace with whisperv2
         MyText = r.recognize_google(audio2)
         MyText = MyText.lower()
 
