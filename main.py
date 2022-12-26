@@ -92,12 +92,23 @@ def nAIs(lines,sessid=1):
         time.sleep(0.5)
         audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 
-def personPlusAi():
+
+# A fake type language for shared ID generation for random tags
+SomeSharedIdSpace = int
+
+# Import randomness server for generating different
+#from twitter import snowflakes
+
+def next_session() -> SomeSharedIdSpace:
+    print("this is where i would use copilot if i had one!")
+    # (because the python snowflakes infrastructure standup team never met)
+    # Fleet is not perfect for Python, but it's pretty damn good.
+
+def personPlusAi(avatar: Character):
     """This is a basic conversation between you and an AI. Choose your session description and what characters you want."""
-    avatar = Avatar
-    with make_session(id=1,
-        name="Contemplations on Entities",
-        desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+    with make_session(id=next_session(),
+        name="OH FUCK OH SHIT MY CLOCK DOESNT SAY THE YEAR ONLY THE DAY AND MONTH",
+        desc="bro the world is on fire",
     ) as sess:
     # Create directories
         utils.create_directory("recording/output/", False) # Output should not be cleared
@@ -106,7 +117,11 @@ def personPlusAi():
 
         shouldntExit = True # conversation will loop until user wants to exit
         while shouldntExit: # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
-            latest_record = audio.listen_until_quiet_again()
+            #latest_record = audio.listen_until_quiet_again() # Audio based user input
+
+            print("DILLWEED AMOGUS:\n")
+            # dillweed sussy moment
+            latest_record = audio.ListenRecord(audio.init_file_handle(), 0, input()) # Text based user input
             print(latest_record.spoken_content)
 
             if(latest_record.spoken_content == "quit" or latest_record.spoken_content is None): # Trigger for ending convo, will then concatenate
@@ -114,8 +129,9 @@ def personPlusAi():
                 break
 
             latest_record.file_handle.close()
-            response = sess.get_response(avatar, latest_record.spoken_content, primPaths[0])
-            print("Conversation: " + response)
+            response = sess.get_response(chr, latest_record.spoken_content, primPaths[0])
+            #print("Conversation: " + response)
+            response = sess
 
         # Save the audio files to the output directory
         #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
