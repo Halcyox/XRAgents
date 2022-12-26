@@ -93,6 +93,34 @@ def calibrate():
         print("done initializing microphone!")
     return _calibrated_source
 
+# This is a mock file handle object
+class FakeFile:
+    def __init__(self):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    def read(self):
+        with open(self.path, 'rb') as f:
+            return f.read()
+
+    def seek(self, offset, whence=0):
+        pass
+
+    def tell(self):
+        return 0
+
+    def close(self):
+        pass
+
+# Initialize a mock file handle object
+def init_file_handle():
+    return FakeFile()
+
 ListenRecord = collections.namedtuple("ListenRecord", field_names=("file_handle", "path", "spoken_content"))
 
 
