@@ -1,14 +1,12 @@
-
-# Python program to translate
-# Speech to text and text to speech
 import sys, time, os
-
-import halcyox
-from halcyox import Character, Session, Avatar
-from halcyox.functions import audio, utils
 import pandas as pd
-
 import typing
+
+import xragents
+from xragents import audio, utils, cast
+from xragents.types import Character
+from xragents.session import Session
+
 NUM_ACTORS = 2 # We can't get more than 5 without lagging usually, modify this if you want more actors in the USD scene
 
 primPaths = ["/World/audio2face/PlayerStreaming"] # Make the primitive path references for the number of actors
@@ -22,6 +20,7 @@ from dataclasses import dataclass
 class SceneDescription:
     num_characters: int
     names: list[str]
+    characters: list[Character]
     descs: dict[typing.Any,typing.Any]
 
 def allocate_characters(num_characters:int,names:list[str],descriptions: list[str]) -> dict[str,Character]:
@@ -76,9 +75,10 @@ def nAIs(lines,sessid=1):
     characters = allocate_characters(len(characters),list(characters.keys()),["",""])
 
     with make_session(id=0,
-        name="Contemplations on Entities",
-        desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-        ) as sess:
+                      name="Contemplations on Entities",
+                      desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+                      scene = SceneDescription(len(characters), characters, {}),
+                      ) as sess:
 
         # inform a server about our server someday
 
@@ -92,46 +92,46 @@ def nAIs(lines,sessid=1):
         time.sleep(0.5)
         audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 
-
 # A fake type language for shared ID generation for random tags
 SomeSharedIdSpace = int
 
 # Import randomness server for generating different
-#from twitter import snowflakes
+from snowflake import Snowflake
 
 def next_session() -> SomeSharedIdSpace:
-    print("this is where i would use copilot if i had one!")
+    pass
+# just hash a large nubmer or something
     # (because the python snowflakes infrastructure standup team never met)
     # Fleet is not perfect for Python, but it's pretty damn good.
 
-def personPlusAi(avatar: Character):
+def personPlusAi(chr: Character):
     """This is a basic conversation between you and an AI. Choose your session description and what characters you want."""
     with make_session(id=next_session(),
-        name="OH FUCK OH SHIT MY CLOCK DOESNT SAY THE YEAR ONLY THE DAY AND MONTH",
-        desc="bro the world is on fire",
-    ) as sess:
-    # Create directories
+                      name="Contemplations on Entities",
+                      desc=f"The following is an enlightening conversation between you and {chr.name} about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+                      scene = SceneDescription(1, [chr], {}),
+                      ) as sess:
+        # Create directories
         utils.create_directory("recording/output/", False) # Output should not be cleared
         utils.create_directory("recording/ai/") # Clears temporary files there
         utils.create_directory("recording/user/") # Clears temporary files there
 
         shouldntExit = True # conversation will loop until user wants to exit
+        print(f"You are now talking with {chr.name}!")
+        print(f"Conversation description: {sess.desc}")
+        print(f"{chr.name}: {chr.desc} ")
         while shouldntExit: # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
             #latest_record = audio.listen_until_quiet_again() # Audio based user input
-
-            print("DILLWEED AMOGUS:\n")
-            # dillweed sussy moment
-            latest_record = audio.ListenRecord(audio.init_file_handle(), 0, input()) # Text based user input
-            print(latest_record.spoken_content)
+            latest_record = audio.ListenRecord(audio.init_file_handle(), 0, input("You: ")) # Text based user input
+            #print(latest_record.spoken_content)
 
             if(latest_record.spoken_content == "quit" or latest_record.spoken_content is None): # Trigger for ending convo, will then concatenate
                 shouldntExit = False
                 break
 
             latest_record.file_handle.close()
-            response = sess.get_response(chr, latest_record.spoken_content, primPaths[0])
-            #print("Conversation: " + response)
-            response = sess
+            response = sess.make_speak(chr, primPaths[0])
+            #print(f"{chr.name}: {response}")
 
         # Save the audio files to the output directory
         #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
@@ -143,6 +143,6 @@ if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")
     # for i, arg in enumerate(sys.argv):
     #     print(f"Argument {i:>6}: {arg}")
-    personPlusAi()
+    personPlusAi(cast.KillerOfWorlds)
     #dirname = os.path.dirname(__file__)
     #script_input(os.path.join(dirname,"scripts/input/"))

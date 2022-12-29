@@ -38,13 +38,13 @@ def push_audio_track(url, audio_data, samplerate, instance_name):
         request.samplerate = samplerate
         request.instance_name = instance_name
         request.block_until_playback_is_finished = block_until_playback_is_finished
-        print("Sending audio data...")
+        #print("Sending audio data...")
         response = stub.PushAudio(request)
-        if response.success:
-            print("SUCCESS")
-        else:
-            print(f"ERROR: {response.message}")
-    print("Closed channel")
+        #if response.success:
+            #print("SUCCESS")
+        #else:
+            #print(f"ERROR: {response.message}")
+    #print("Closed channel")
 
 
 def push_audio_track_stream(url, audio_data, samplerate, instance_name):
@@ -66,7 +66,7 @@ def push_audio_track_stream(url, audio_data, samplerate, instance_name):
     block_until_playback_is_finished = True  # ADJUST
 
     with grpc.insecure_channel(url) as channel:
-        print("Channel creadted")
+        #print("Channel creadted")
         stub = audio2face_pb2_grpc.Audio2FaceStub(channel)
 
         def make_generator():
@@ -84,13 +84,13 @@ def push_audio_track_stream(url, audio_data, samplerate, instance_name):
                 yield audio2face_pb2.PushAudioStreamRequest(audio_data=chunk.astype(np.float32).tobytes())
 
         request_generator = make_generator()
-        print("Sending audio data...")
+        #print("Sending audio data...")
         response = stub.PushAudioStream(request_generator)
-        if response.success:
-            print("SUCCESS")
-        else:
-            print(f"ERROR: {response.message}")
-    print("Channel closed")
+        #if response.success:
+            #print("SUCCESS")
+        #else:
+            #print(f"ERROR: {response.message}")
+    #print("Channel closed")
 
 
 def main():
