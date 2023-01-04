@@ -15,8 +15,7 @@ async def speech_consume(track: MediaStreamTrack):
             res = wm.transcribe(samples)
             print(f"User decided to say\t{res['text']}")
         except MediaStreamError:
-            return
-                                                                                 
+            return                                                                          
 
 def reload_model(which):
     wm = whisper.load_model("which")

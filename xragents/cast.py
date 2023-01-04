@@ -19,6 +19,11 @@ KillerOfWorlds = Character("KillerOfWorlds",
 Avatar2 = Character("Avatar2",
                     2, desc=""" You need to learn about the 8 sources first. You're either joking or crazy, you can't "SIET". You're just not getting it. It's all about the 8 sources. You use it to base your decisions on. You don't need to do anything, just know about the 8 sources. It's too late for me to turn back now, I need to fulfill my destiny. You just explained it in base terms of crazy.""", wiki_link="", primitivePath="/World/audio2face/PlayerStreaming")
 
+KoolaidMan = Character("K-Hole", id=8888888,
+                       desc="The Kool-Aid Man represents the user of the program containing the AI,  who has broken the fourth wall and has been inserted into the metanarrative.")
+
+
+
 # PocketComedian("PocketComedian",
 #               101,
 #               desc)

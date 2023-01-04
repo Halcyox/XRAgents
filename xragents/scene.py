@@ -2,23 +2,39 @@ from dataclasses import dataclass
 import time
 import enum
 import logging
-from . import nlp, audio, anim, scenes
+from . import nlp, audio, anim
 import os
 from typing import Optional # This is support for type hints
 from log_calls import log_calls # For logging errors and stuff
+#from setting import SettingDescription
 
 @dataclass
-class Session:
-    """This represents a session. We can have multiple sessions in a scene.
-    Each session has an id, name, description, and a list of characters involved."""
-    id : int
-    name : str
-    desc : str
-    scene: scenes.InfiniteTelevision = None
-    history: str = ""
+class Scene:
+    """This represents a scene. We can have multiple scenes in a setting.
+    Each scene has an id, name, description, and a list of characters involved."""
+    def __init__(self, id: int, name: str, desc: str):
+        self.id_ = id
+        self.name_ = name
+        self.desc_ = desc
+
+    # NOTE: dataclasses solve this constructor. ember knew what they were doing and louis is dumb
+    # revisit this and unbreak it
+
+    from contextlib import contextmanager
+    @contextmanager
+    def make_scene(id, name, desc, description):
+        """makes sure a scene's save history is always saved!"""
+        # resource = Scene(*args, **kwds)
+        resource = Scene(id,name,desc)
+        try:
+            yield resource
+        finally:
+            # Code to release resource, e.g.:
+            resource.save_history()
 
     def prompt_for_gpt3(self):
-        return f"{self.scene.descs}{' '.join(c.desc for c in self.scene.characters)}\n{self.history}"
+        """Return the entire prompt to GPT3"""
+        #return f"{self.scene.descs}{' '.join(c.desc for c in self.scene.characters)}\n{self.history}"
 
     @log_calls()
     def animate(self, character, charLine: str):
@@ -41,19 +57,16 @@ class Session:
     def make_speak(self, character, primitivePath) -> str:
         """Tell a character something and speak its response to primitivePath, returning what we spoke as text"""
         prompt = self.prompt_for_gpt3()
-        print("############")
-        logging.info(prompt)
-        print("############")
         textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
         responseEmotion = nlp.get_emotion(textResponse)
-        self.history.append(textResponse)
-        print(self.history)
+        self.description_.append(textResponse)
+        print(self.description_)
 
         wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
 
         print(f"{character.name}: {textResponse}")
         anim.animate(wavPath, primitivePath) # Execute animation
-        # audio.cleanup(wavPath, outputPath)
+        # audio.cleanup(wavPath, outputPath) # Erases after speaking
 
         return textResponse
 
@@ -63,16 +76,16 @@ class Session:
         histdir = os.path.join(dirname,f"../{outputDir}")
         if not os.path.exists(histdir):
             os.mkdir(histdir)
-        historyPath = os.path.join(histdir, f"{str(self.id) + str(time.time())}_history.txt")
+        historyPath = os.path.join(histdir, f"{str(self.id_) + str(time.time())}_history.txt")
         with open(historyPath, "w") as historyFile:
-            historyFile.write(self.history)
-            print(self.history)
+            historyFile.write(self.desc_)
+            print(self.desc_)
 
     def _model_does_reply_thingy(self, promptText:str, character):
         """User gives an input to GPT3, and gets a response and the updated history."""
         #print(character)
         narrative_next = f"\nYou: {promptText}\n{character.name}:"
-        responsePrompt = self.history + narrative_next
+        responsePrompt = self.description_ + narrative_next
         #     responsePrompt = f"""
         #     {sessionData[sessionDescription]}
         #     {characterDescription}
