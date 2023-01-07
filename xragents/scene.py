@@ -2,35 +2,26 @@ from dataclasses import dataclass
 import time
 import enum
 import logging
-from . import nlp, audio, anim
+
+from contextlib import contextmanager
 import os
-from typing import Optional # This is support for type hints
+from typing import Optional, Any # This is support for type hints
 from log_calls import log_calls # For logging errors and stuff
+
 #from setting import SettingDescription
+from . import nlp, audio, anim
 
 @dataclass
 class Scene:
     """This represents a scene. We can have multiple scenes in a setting.
     Each scene has an id, name, description, and a list of characters involved."""
-    def __init__(self, id: int, name: str, desc: str):
-        self.id_ = id
-        self.name_ = name
-        self.desc_ = desc
+    id: int
+    name: str
+    desc: str
+    characters: list[Any]
 
     # NOTE: dataclasses solve this constructor. ember knew what they were doing and louis is dumb
     # revisit this and unbreak it
-
-    from contextlib import contextmanager
-    @contextmanager
-    def make_scene(id, name, desc, description):
-        """makes sure a scene's save history is always saved!"""
-        # resource = Scene(*args, **kwds)
-        resource = Scene(id,name,desc)
-        try:
-            yield resource
-        finally:
-            # Code to release resource, e.g.:
-            resource.save_history()
 
     def prompt_for_gpt3(self):
         """Return the entire prompt to GPT3"""
@@ -110,3 +101,15 @@ class Scene:
 
     def __str__(self):
         return repr(self)
+
+
+@contextmanager
+def make_scene(id, name, desc, description):
+    """makes sure a scene's save history is always saved!"""
+    # resource = Scene(*args, **kwds)
+    resource = Scene(id,name,desc)
+    try:
+        yield resource
+    finally:
+        # Code to release resource, e.g.:
+        resource.save_history()

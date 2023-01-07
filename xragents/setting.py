@@ -2,21 +2,21 @@ from dataclasses import dataclass
 import typing
 
 from .types import Character
-from .audio import *
-from .scene import *
+from . import scene, utils, audio
 
 import ZODB, ZODB.FileStorage  # Database storage of objects
 
 from ZODB.blob import Blob
 
 
-#@dataclass
-#class DialogRound:
-#    """Unimplemented placeholder for more granular information about each dialog round"""
-#    who_spoke: Character
-#    what_they_said: str
-#    mental_state_before_round: typing.Any
-#    private_information: typing.Any
+@dataclass
+class DialogRound:
+   # TODO: use this class
+   """Placeholder for more granular information about each dialog round"""
+   who_spoke: Character
+   what_they_said: str
+   mental_state_before_round: typing.Any
+   private_information: typing.Any
 
 @dataclass
 class DialogHistory:
@@ -46,7 +46,7 @@ class InfiniteTelevision:
     setting_description: SettingDescription
 
     def __init__(self):
-        
+        pass
 
     def format_prompt(self) -> str:
         pass
@@ -56,7 +56,7 @@ class InfiniteTelevision:
 
     def personPlusAi(self, chr: Character):
         """This is a basic conversation between you and an AI. Choose your session description and what characters you want."""
-        with make_scene(id=next_session(),
+        with scene.make_scene(id=next_session(),
                         name="Contemplations on Entities",
                         desc=f"The following is an enlightening conversation between you and {chr.name} about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
                         description = SettingDescription(1, [chr], {}),

@@ -3,7 +3,7 @@ import pandas as pd
 import typing
 
 import xragents
-from xragents import setting
+from xragents import setting, scene
 from xragents import audio, utils, cast
 from xragents.types import Character
 #from xragents.scene import Scene
@@ -19,7 +19,6 @@ from dataclasses import dataclass
 
 @dataclass
 class SettingDescription:
-    num_characters: int
     names: list[str]
     characters: list[Character]
     #descs: dict[typing.Any,typing.Any]
@@ -67,10 +66,10 @@ def nAIs(lines,sessid=1):
                 characters[name] = 1
     characters = allocate_characters(len(characters),list(characters.keys()),["",""])
 
-    with make_scene(id=0,
+    with scene.make_scene(id=0,
                     name="Contemplations on Entities",
                     desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-                    description = SettingDescription(len(characters), characters, {}),
+                    description = SettingDescription([c.name for c in characters.values()], list(characters.values())),
                     ) as sess:
 
         # inform a server about our server someday
@@ -102,8 +101,8 @@ if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")
     # for i, arg in enumerate(sys.argv):
     #     print(f"Argument {i:>6}: {arg}")
-    watchTV = InfiniteTelevision()
+    watchTV = setting.InfiniteTelevision()
 
-    personPlusAi(cast.KillerOfWorlds)
+    watchTV.personPlusAi(cast.Avatar)
     #dirname = os.path.dirname(__file__)
     #script_input(os.path.join(dirname,"scripts/input/"))
