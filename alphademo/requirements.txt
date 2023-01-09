@@ -1,9 +1,0 @@
-aiortc
-aiohttp
-SpeechRecognition
-pyttsx3
-log_calls
-openai
-python-dotenv
-pyaudio
-git+https://github.com/openai/whisper.git
