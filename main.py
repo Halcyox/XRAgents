@@ -1,6 +1,7 @@
 import sys, time, os
 import pandas as pd
 import typing
+import random
 
 import xragents
 from xragents import setting, scene
@@ -87,15 +88,9 @@ def nAIs(lines,sessid=1):
 # A fake type language for shared ID generation for random tags
 SomeSharedIdSpace = int
 
-# Import randomness server for generating different agent tags
-# from snowflake import Snowflake
-
 def next_session() -> SomeSharedIdSpace:
-    pass
-# just hash a large nubmer or something
-    # (because the python snowflakes infrastructure standup team never met)
-    # Fleet is not perfect for Python, but it's pretty damn good.
-
+    # TODO: snowflakes
+    return random.randint(0,2**64 -1)
 
 if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")

@@ -4,6 +4,7 @@ import azure.cognitiveservices.speech as speechsdk
 from pydub import AudioSegment
 import time
 from pathlib import Path
+import io
 
 import typing
 import speech_recognition as sr
@@ -19,7 +20,8 @@ def generate_wav(text, speaker, lang=None,outputPath=None):
     speech_config = speechsdk.SpeechConfig(subscription="bfc08e214f6c48cebcde668a433196d3", region="eastus")
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
     wavname =  f"{time.time()}.wav" # the path of the current audio file
-    audio_config = speechsdk.audio.AudioOutputConfig(filename= os.path.join(outputPath,wavname))
+    wavPath =  os.path.join(outputPath,wavname)
+    audio_config = speechsdk.audio.AudioOutputConfig(filename=wavPath)
 
     # Set either the `SpeechSynthesisVoiceName` or `SpeechSynthesisLanguage`.
     speech_config.speech_synthesis_language = "en-US"
@@ -91,34 +93,6 @@ def calibrate():
         r.adjust_for_ambient_noise(_calibrated_source, duration=2)
         print("done initializing microphone!")
     return _calibrated_source
-
-# This is a mock file handle object
-class FakeFile:
-    def __init__(self):
-        pass
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-    def read(self):
-        with open(self.path, 'rb') as f:
-            return f.read()
-
-    def seek(self, offset, whence=0):
-        pass
-
-    def tell(self):
-        return 0
-
-    def close(self):
-        pass
-
-# Initialize a mock file handle object
-def init_file_handle():
-    return FakeFile()
 
 ListenRecord = collections.namedtuple("ListenRecord", field_names=("file_handle", "path", "spoken_content"))
 
