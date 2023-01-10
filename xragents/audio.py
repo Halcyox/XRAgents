@@ -13,15 +13,19 @@ import pyttsx3
 import time
 import os
 
+
 def generate_wav(text, speaker, lang=None,outputPath=None):
+    print(f"Trying to write to {outputPath}")
     """Generates a wav file from text using the Azure Cognitive Services Speech SDK."""
     if outputPath is None:
-        outputPath = "/recording/ai/ai_"
+        outputPath = "recording/ai/ai_bad_fixme"
     #TODO:API TOKEN
     speech_config = speechsdk.SpeechConfig(subscription="bfc08e214f6c48cebcde668a433196d3", region="eastus")
     # audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
-    wavname =  f"{time.time()}.wav" # the path of the current audio file
-    wavPath =  os.path.join(outputPath,wavname)
+    wavname =  f"{int(time.time())}.wav" # the path of the current audio file
+    wavPath = f"{outputPath}/{wavname}"#  os.path.join(outputPath,wavname)
+    Path(outputPath).mkdir(parents=True, exist_ok=True)
+    print(f"{wavPath} is the final destination")
     audio_config = speechsdk.audio.AudioOutputConfig(filename=wavPath)
 
     # Set either the `SpeechSynthesisVoiceName` or `SpeechSynthesisLanguage`.
@@ -113,8 +117,10 @@ class ListenRecord:
 def listen_until_quiet_again() -> ListenRecord:
     """This listens to one chunk of user input, returning file handle to """
     try:
+        obj = calibrate()
         print("Listening...") # The microphone is now listening for input
-        audio2 = r.listen(calibrate(), timeout=5 )
+
+        audio2 = r.listen(obj, timeout=5 )
 
         # save the audio file to a folder in ./recording/ with the name being timestamped
         fileName = "recording/user/" + "Convo_" + str(time.time()) + ".wav"

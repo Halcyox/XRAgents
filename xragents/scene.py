@@ -28,7 +28,6 @@ class Scene:
         """Return the entire prompt to GPT3"""
         return f"{self.description}{' '.join(c.desc for c in self.characters)}\n{self.history}"
 
-    @log_calls()
     def animate(self, character, charLine: str):
         """Used to animate a specific character based on the text input
         onto a specific animation node's audio stream listener"""
@@ -54,7 +53,7 @@ class Scene:
         self.history += textResponse
         print(f"Response: {textResponse} with computed emotion {responseEmotion}")
 
-        wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
+        wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural") # Generate wav
 
         print(f"{character.name}: {textResponse}")
         anim.animate(wavPath, primitivePath) # Execute animation

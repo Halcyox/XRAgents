@@ -116,7 +116,8 @@ def main():
     url = "localhost:50051"  # ADJUST
 
     # Local input WAV file path
-    audio_fpath = "../.." + sys.argv[1]
+    audio_fpath = "../../" + sys.argv[1]
+    print(f"Audio file: {audio_fpath}")
 
     # Prim path of the Audio2Face Streaming Audio Player on the stage (were to push the audio data)
     instance_name = sys.argv[2]

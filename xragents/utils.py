@@ -15,7 +15,8 @@ def create_directory(directory, clear=True): # create a directory if it doesn't 
         os.makedirs(directory)
     if clear:
         for filename in os.listdir(directory):
-            os.remove(os.path.join(directory, filename))
+            pass
+            #os.remove(os.path.join(directory, filename))
 
 # The Script class holds the information for a script, actors, context, and lines.
 class Script:
