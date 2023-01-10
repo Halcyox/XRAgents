@@ -1,5 +1,12 @@
 # Metahumans Halcyox
 
+## Building the docs
+
+```sh
+cd doc
+.\make.bat html
+```
+
 ## Currently being refactored
 # Priority Refactor items
 * Restructuring the code flow to have one way dependency chain (rather than loop (Setting/Scene circular dependency))

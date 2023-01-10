@@ -4,3 +4,4 @@ target
 *.txt
 .fleet
 .env
+doc/_build

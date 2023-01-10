@@ -12,7 +12,6 @@ from ZODB.blob import Blob
 
 @dataclass
 class DialogRound:
-   # TODO: use this class
    """Placeholder for more granular information about each dialog round"""
    who_spoke: Character
    what_they_said: str
