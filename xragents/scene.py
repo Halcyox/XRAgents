@@ -17,15 +17,16 @@ class Scene:
     Each scene has an id, name, description, and a list of characters involved."""
     id: int
     name: str
-    desc: str
+    description: str # conversation description
     characters: list[Any]
+    history: str = ""
 
     # NOTE: dataclasses solve this constructor. ember knew what they were doing and louis is dumb
     # revisit this and unbreak it
 
-    def prompt_for_gpt3(self):
+    def prompt_for_gpt3(self) -> str: 
         """Return the entire prompt to GPT3"""
-        #return f"{self.scene.descs}{' '.join(c.desc for c in self.scene.characters)}\n{self.history}"
+        return f"{self.description}{' '.join(c.desc for c in self.characters)}\n{self.history}"
 
     @log_calls()
     def animate(self, character, charLine: str):
@@ -35,7 +36,7 @@ class Scene:
         updatedHistory = self.history+f"\n{character.name}:{charLine}\n"
         responseEmotion = nlp.get_emotion(charLine)
         # Generate wav, selecting wav file
-        wavPath = audio.generate_wav(charLine, responseEmotion, lang="en-US", outputPath="/scripts/ai/ai_")
+        wavPath = audio.generate_wav(charLine, responseEmotion, lang="en-US", outputPath=f"/scripts/ai/ai_{self.name}")
 
         # Execute animation
         anim.animate(wavPath, character.primitivePath)
@@ -50,8 +51,8 @@ class Scene:
         prompt = self.prompt_for_gpt3()
         textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
         responseEmotion = nlp.get_emotion(textResponse)
-        self.description_.append(textResponse)
-        print(self.description_)
+        self.history += textResponse
+        print(f"Response: {textResponse} with computed emotion {responseEmotion}")
 
         wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion) # Generate wav
 
@@ -67,22 +68,22 @@ class Scene:
         histdir = os.path.join(dirname,f"../{outputDir}")
         if not os.path.exists(histdir):
             os.mkdir(histdir)
-        historyPath = os.path.join(histdir, f"{str(self.id_) + str(time.time())}_history.txt")
+        historyPath = os.path.join(histdir, f"{str(self.id) + str(time.time())}_history.txt")
         with open(historyPath, "w") as historyFile:
-            historyFile.write(self.desc_)
-            print(self.desc_)
+            historyFile.write(self.history)
+            print(f"just wrote the history:\n{self.history}")
 
     def _model_does_reply_thingy(self, promptText:str, character):
         """User gives an input to GPT3, and gets a response and the updated history."""
         #print(character)
         narrative_next = f"\nYou: {promptText}\n{character.name}:"
-        responsePrompt = self.description_ + narrative_next
+        responsePrompt = self.description + narrative_next
         #     responsePrompt = f"""
         #     {sessionData[sessionDescription]}
         #     {characterDescription}
         #     You: {promptText}
         #     {characterName}:"""
-        response = nlp.get_completion(self.desc + responsePrompt)
+        response = nlp.get_completion(self.description + responsePrompt)
 
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
@@ -104,12 +105,12 @@ class Scene:
 
 
 @contextmanager
-def make_scene(id, name, desc, description):
+def make_scene(id, name, description, characters):
     """makes sure a scene's save history is always saved!"""
     # resource = Scene(*args, **kwds)
-    resource = Scene(id,name,desc)
+    resource = Scene(id,name,description,characters)
     try:
         yield resource
     finally:
-        # Code to release resource, e.g.:
+        # ALWAYS save the history, no matter what.
         resource.save_history()

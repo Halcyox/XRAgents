@@ -1,12 +1,27 @@
-from .types import Character
+from .types import *
 
 # This holds various characters to use
+
 
 Avatar = Character("Avatar",
                    1,
                    desc="Avatar is a wise philosopher who understands the world in complex yet beautiful, meta-cognitive and cross-paradigmatic ways. He speaks with the eloquence of a great writer, weaving connections through networks of intricate ideas.",
                    wiki_link="https://en.wikipedia.org/wiki/Avatar",
                    primitivePath="/World/audio2face/PlayerStreaming",
+                   )
+
+# TODO: Different Voice
+# TODO: materials for the Guy
+
+# TODO:
+#   push a button to interrupt the usual flow to interrupt
+
+Unvatar = Character("Unvatar",
+                   2,
+                   desc="Unvatar is a complete dumbass who understands absolutely nothing, and asks lewd questions all the time.",
+                   wiki_link="https://en.wikipedia.org/wiki/Avatar",
+                   primitivePath="/World/audio2face_01/PlayerStreaming",
+                   voice = NeuralTTSSelector.GUY
                    )
 
 KillerOfWorlds = Character("KillerOfWorlds",

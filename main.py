@@ -69,8 +69,8 @@ def nAIs(lines,sessid=1):
 
     with scene.make_scene(id=0,
                     name="Contemplations on Entities",
-                    desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-                    description = SettingDescription([c.name for c in characters.values()], list(characters.values())),
+                    description="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+                    characters=list(characters.values()),
                     ) as sess:
 
         # inform a server about our server someday
@@ -84,13 +84,6 @@ def nAIs(lines,sessid=1):
         sess.save_history(outputDir="scripts/output_text/")
         time.sleep(0.5)
         audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
-
-# A fake type language for shared ID generation for random tags
-SomeSharedIdSpace = int
-
-def next_session() -> SomeSharedIdSpace:
-    # TODO: snowflakes
-    return random.randint(0,2**64 -1)
 
 if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")

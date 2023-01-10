@@ -5,7 +5,7 @@ import enum
 
 class NeuralTTSSelector(enum.Enum):
     TONY = "en-US-TonyNeural"
-
+    GUY = "en-US-GuyNeural"
 @dataclass
 class Character:
     """This is a character, we can have multiple characters in a scene.

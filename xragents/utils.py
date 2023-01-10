@@ -1,6 +1,14 @@
 import os
+import random
 
 # This file has utility methods for directory creation, etc.
+
+# A fake type language for shared ID generation for random tags
+SomeSharedIdSpace = int
+
+def next_session() -> SomeSharedIdSpace:
+    # TODO: snowflakes
+    return random.randint(0,2**64 -1)
 
 def create_directory(directory, clear=True): # create a directory if it doesn't exist, with the option to clear it
     if not os.path.exists(directory):
