@@ -46,8 +46,7 @@ def parseScripts(inputDir=None, outputDir=None):
     wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural", responseEmotion)
 
 
-
-
-
-totalVid = len(content) # sets the total length of the video(lines)
-for i in range(1, len(content)): # loops through the lines
+# TODO: what is this?
+# totalVid = len(content) # sets the total length of the video(lines)
+# for i in range(1, len(content)): # loops through the lines
+#     pass

@@ -1,11 +1,31 @@
 # Metahumans Halcyox
 
+## Building the docs
+
+```sh
+cd doc
+.\make.bat html
+```
+
+## Currently being refactored
+# Priority Refactor items
+* Restructuring the code flow to have one way dependency chain (rather than loop (Setting/Scene circular dependency))
+* Defining object-oriented code structure
+* Adding documentation
+* 
+
+# Non-priority Refactor items
+* Encapsulation of data privacy (__id etc.)
+* ZODB object saving persistence stuff
+* Multithreading
+
+
+
 # Next time:
 * Work on the batch generation of videos for two characters, and see how far you get.
 * Also, work on the front end with Alice.
 
 ## Priority TODO:
-* SSML for voice style modification stuff
 
 ~~* Selection backend for voice options~~
 * Set up simple server client app to get people to be able to access a server of talking to ai instance
@@ -27,6 +47,7 @@
 * change azure to streaming for lower latency
 * Connect your own camera to the output video with the AI
 * Unreal integration
+* SSML for voice style modification stuff
 
 ## Web TODO:
 * Figure out dependencies, Docker stuff, versions
@@ -37,9 +58,6 @@
 
 ## Marketing TODO:
 * Affiliate marketing application to get other people to grow our software
-
-
-
 
 
 ## LOCAL
@@ -54,17 +72,31 @@
 
 ### Directory Structure
 ```
-metahumans
+XRAgents
 ├── LICENSE
 ├── README.md
-├── server.py
-├── digital-humans.db
-├── functions
+├── alphademo
+│   ├── videoproxy
+│   │   ├── src
+│   │   │   ├── main.rs
+│   │   │   └── signal.rs
+│   │   ├── brws_sess
+│   │   ├── Cargo.lock
+│   │   └── Cargo.toml
+...
+├── deps/streaming_server
+...
+├── xragents
+│   ├── anim.py
 │   ├── audio.py
-│   ├── db.py
-│   └── nlp.py
-|   └── anim.py
-└── classes (unused)
+│   ├── cast.py
+│   ├── nlp.py
+│   ├── scenes.py
+│   ├── scriptgen.py
+│   ├── session.py
+│   ├── types.py
+│   └── utils.py
+└── digital-humans.db
 ```
 
 ### Example Post Requests

@@ -1,5 +1,0 @@
-aiortc
-aiohttp
-SpeechRecognition
-pyttsx3
-git+https://github.com/openai/whisper.git

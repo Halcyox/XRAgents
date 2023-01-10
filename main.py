@@ -1,14 +1,19 @@
-
-# Python program to translate
-# Speech to text and text to speech
 import sys, time, os
-
-import halcyox
-from halcyox import Character, Session, Avatar
-from halcyox.functions import audio, utils
 import pandas as pd
-
 import typing
+import random
+from dataclasses import dataclass
+
+from consolemenu import *
+from consolemenu.items import *
+
+import xragents
+from xragents import setting, scene
+from xragents import audio, utils, cast, simulator
+from xragents.types import Character
+
+#from xragents.scene import Scene
+
 NUM_ACTORS = 2 # We can't get more than 5 without lagging usually, modify this if you want more actors in the USD scene
 
 primPaths = ["/World/audio2face/PlayerStreaming"] # Make the primitive path references for the number of actors
@@ -16,15 +21,9 @@ for i in range(NUM_ACTORS-1):
     primPaths.append(f"/World/audio2face_{(i+1):02d}/PlayerStreaming")
 
 VOICES = pd.read_csv("deps/streaming_server/resources/VoiceStyles.csv") # Read the available Microsoft Azure Voices
-from dataclasses import dataclass
-
-@dataclass
-class SceneDescription:
-    num_characters: int
-    names: list[str]
-    descs: dict[typing.Any,typing.Any]
 
 def allocate_characters(num_characters:int,names:list[str],descriptions: list[str]) -> dict[str,Character]:
+    """Create all the characters inside of a list"""
     if num_characters > NUM_ACTORS:
         raise Exception("Too many characters for the number of actors.")
     characters = {}
@@ -48,17 +47,6 @@ def script_input(inputDir):
             lines = f.readlines()
             nAIs(lines,index+1)
 
-from contextlib import contextmanager
-@contextmanager
-def make_session(*args, **kwds):
-    """makes sure a session's save history is always saved!"""
-    resource = Session(*args, **kwds)
-    try:
-        yield resource
-    finally:
-        # Code to release resource, e.g.:
-        resource.save_history()
-
 def nAIs(lines,sessid=1):
     #######################
     utils.create_directory("scripts/output_audio/", False)
@@ -75,10 +63,11 @@ def nAIs(lines,sessid=1):
                 characters[name] = 1
     characters = allocate_characters(len(characters),list(characters.keys()),["",""])
 
-    with make_session(id=0,
-        name="Contemplations on Entities",
-        desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-        ) as sess:
+    with scene.make_scene(id=0,
+                    name="Contemplations on Entities",
+                    description="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
+                    characters=list(characters.values()),
+                    ) as sess:
 
         # inform a server about our server someday
 
@@ -92,41 +81,35 @@ def nAIs(lines,sessid=1):
         time.sleep(0.5)
         audio.concat_audio_single_directory("scripts/ai/",outputPath="scripts/output_audio/output_"+ str(time.time())+".wav") # the finished audio file is saved
 
-def personPlusAi():
-    """This is a basic conversation between you and an AI. Choose your session description and what characters you want."""
-    avatar = Avatar
-    with make_session(id=1,
-        name="Contemplations on Entities",
-        desc="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-    ) as sess:
-    # Create directories
-        utils.create_directory("recording/output/", False) # Output should not be cleared
-        utils.create_directory("recording/ai/") # Clears temporary files there
-        utils.create_directory("recording/user/") # Clears temporary files there
 
-        shouldntExit = True # conversation will loop until user wants to exit
-        while shouldntExit: # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
-            latest_record = audio.listen_until_quiet_again()
-            print(latest_record.spoken_content)
+# Create the menu
+menu = ConsoleMenu("XRAgents", "Simulator Root Menu")
 
-            if(latest_record.spoken_content == "quit" or latest_record.spoken_content is None): # Trigger for ending convo, will then concatenate
-                shouldntExit = False
-                break
+def one_ai():
 
-            latest_record.file_handle.close()
-            response = sess.get_response(avatar, latest_record.spoken_content, primPaths[0])
-            print("Conversation: " + response)
-
-        # Save the audio files to the output directory
-        #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
-        audio.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
-        audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
-
-
-if __name__ == "__main__":
     # print(f"Arguments count: {len(sys.argv)}")
     # for i, arg in enumerate(sys.argv):
     #     print(f"Argument {i:>6}: {arg}")
-    personPlusAi()
+    watchTV = setting.InfiniteTelevision()
+
+    simulator.personPlusAi(cast.Avatar)
     #dirname = os.path.dirname(__file__)
     #script_input(os.path.join(dirname,"scripts/input/"))
+
+def two_ai():
+    watchTV = setting.InfiniteTelevision()
+
+    simulator.twoAiPlusPerson(cast.Avatar, cast.Unvatar)
+
+
+# A FunctionItem runs a Python function when selected
+one_ai_item = FunctionItem("Talk with an AI", one_ai)
+
+two_ai_item = FunctionItem("Watch two AI talk together", two_ai)
+
+# Once we're done creating them, we just add the items to the menu
+menu.append_item(one_ai_item)
+menu.append_item(two_ai_item)
+
+# Finally, we call show to show the menu and allow the user to interact
+menu.show()
