@@ -13,6 +13,7 @@ jobs:
   # next two jobs from https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
     - name: Install dependencies
       run: |
+        apt install portaudio19-dev
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
