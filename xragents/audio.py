@@ -5,6 +5,7 @@ from pydub import AudioSegment
 import time
 from pathlib import Path
 import io
+from dataclasses import dataclass
 
 import typing
 import speech_recognition as sr
@@ -94,8 +95,11 @@ def calibrate():
         print("done initializing microphone!")
     return _calibrated_source
 
-ListenRecord = collections.namedtuple("ListenRecord", field_names=("file_handle", "path", "spoken_content"))
-
+@dataclass
+class ListenRecord:
+    file_handle: typing.BinaryIO
+    path: Path
+    spoken_content: str
 
 def listen_until_quiet_again() -> ListenRecord:
     """This listens to one chunk of user input, returning file handle to """
