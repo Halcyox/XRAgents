@@ -97,9 +97,18 @@ def calibrate():
 
 @dataclass
 class ListenRecord:
+    """Transcript of having listened to user input.
+
+    :param file_handle:
+      An open file object containing the raw audio data.
+    :param path:
+      A path where file_handle is stored.
+    :param spoken_content:
+      The text that was spoken by the user."""
     file_handle: typing.BinaryIO
     path: Path
     spoken_content: str
+
 
 def listen_until_quiet_again() -> ListenRecord:
     """This listens to one chunk of user input, returning file handle to """
@@ -117,7 +126,8 @@ def listen_until_quiet_again() -> ListenRecord:
         MyText = r.recognize_google(audio2)
         MyText = MyText.lower()
 
-        return ListenRecord(file_handle=f, spoken_content=MyText, path=fileName)
+        return ListenRecord(file_handle=f, spoken_content=MyText, path=Path(fileName))
+
     except sr.RequestError as e:
         print("Could not request results; {0}".format(e))
         raise e
