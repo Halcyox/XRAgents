@@ -82,7 +82,7 @@ class Scene:
         #     {characterDescription}
         #     You: {promptText}
         #     {characterName}:"""
-        response = nlp.get_completion(self.description + responsePrompt)
+        response = nlp.get_completion(self.history + responsePrompt)
 
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
