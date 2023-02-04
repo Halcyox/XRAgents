@@ -19,8 +19,6 @@ cd doc
 * ZODB object saving persistence stuff
 * Multithreading
 
-
-
 # Next time:
 * Work on the batch generation of videos for two characters, and see how far you get.
 * Also, work on the front end with Alice.
@@ -32,6 +30,7 @@ cd doc
 * Screen record video
 * Avatar creation/importing
 * Record + stream blendshapes
+* CLI settings for text/voice input
 
 ~~* Convert input script batch pipeline to work with our video generation scripts~~
 * Make VidGen Server -> rendering server distribute accross mult computers
