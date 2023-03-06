@@ -92,7 +92,7 @@ def one_ai():
     #     print(f"Argument {i:>6}: {arg}")
     watchTV = setting.InfiniteTelevision()
 
-    logging.info("Starting the simulator with one AI")
+    print("Starting the simulator with one AI")
     simulator.personPlusAi(cast.Avatar)
     #dirname = os.path.dirname(__file__)
     #script_input(os.path.join(dirname,"scripts/input/"))

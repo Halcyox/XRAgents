@@ -30,13 +30,11 @@ def personPlusAi(chr: Character):
         # Create directories to temporarily store audio files
         utils.create_audio_directories()
 
-        # Convo loop starts here
-        shouldntExit = True 
         print("This is an example info log!")
         print(f"You are now talking with {chr.name}!")
         print(f"Conversation description: {sess.description}")
         print(f"{chr.name}: {chr.desc} ")
-        while shouldntExit: # Loops until "quit" keyword or silence is detected
+        while True: # Loops until "quit" keyword or silence is detected
             # if we have text_only flag set on, we don't record audio
             if not sess.text_only:
                 latest_record = audio.listen_until_quiet_again() # Audio based user input
@@ -45,7 +43,6 @@ def personPlusAi(chr: Character):
             #print(latest_record.spoken_content)
 
             if(latest_record.spoken_content == "quit" or latest_record.spoken_content is None): # Trigger for ending convo, will then concatenate
-                shouldntExit = False
                 break
 
             latest_record.file_handle.close()
