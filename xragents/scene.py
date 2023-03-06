@@ -22,9 +22,6 @@ class Scene:
     text_only: bool
     history: str = ""
 
-    def __post_init__(self):
-        self.history = self.description
-
     def prompt_for_gpt3(self) -> str:
         """Return the entire prompt to GPT3"""
         char_descs = '\n'.join(c.desc for c in self.characters)
@@ -50,15 +47,16 @@ class Scene:
     def user_provided_input(self, said_what):
         """Add the user's input (as a ListenRecord) to the history"""
         self.history += f"\nYou: {said_what}"
+        print("Just added to history: ", said_what)
 
 
     def make_speak(self, character, primitivePath=None) -> str:
-        """Tell a character something, returning what the character spoke as text"""
-        char_descs = '\n'.join(c.desc for c in self.characters)
-        prompt = f"{char_descs}\n{self.history}"
+        """Speak, from a character's perspective."""
+        char_descs = '\n'.join(c.desc for c in self.characters) # Get all character descriptions
+        prompt = f"pee pee{self.description}\npoo poo{char_descs}" # Generate prompt
         #print(prompt)
-        prevlen = len(prompt)
-        if len(prompt)/4 > (2048-150):
+        prevlen = len(prompt) # Get length of prompt
+        if len(prompt)/4 > (2048-150): 
             print(f"Prompt too long ({len(prompt)} chars), autosummarizing!\n{prompt}")
             prompt = nlp.summarize(prompt)
             compression_ratio = 0
@@ -71,7 +69,9 @@ class Scene:
         textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
         #responseEmotion = nlp.get_emotion(textResponse)
         # print(f"textResponse: {textResponse}", file=sys.stderr)
-        self.history = updatedHistory
+        #print(f"updatedHistory: {updatedHistory}", file=sys.stderr)
+        
+        self.history += updatedHistory
         print(f"history rn: {self.history}", file=sys.stderr)
         #
         # print("#################")
@@ -107,9 +107,10 @@ class Scene:
         #print(character)
         #narrative_next = f"\nYou: {promptText}\n{character.name}:"
 
+        
         #narrative_next = f"\n{promptText}\n{character.name}:"
-        newHistoryChunk = f"\n{character.name}:"
-        print(f"responsePrompt: {newHistoryChunk}")
+        newHistoryChunk = f"{self.history}\n{character.name}:"
+        print(f"newHistoryChunk (in progress): {newHistoryChunk}")
         
         #     responsePrompt = f"""
         #     {sessionData[sessionDescription]}
@@ -120,10 +121,12 @@ class Scene:
         response = None
         
         while response is None or response == "":
+            print(f"{promptText+newHistoryChunk}")
             response = nlp.get_completion(promptText+newHistoryChunk)
             time.sleep(1)  # delay by one second
 
         newHistoryChunk += response
+        print(f"newHistoryChunk (final): {newHistoryChunk}")
         
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
