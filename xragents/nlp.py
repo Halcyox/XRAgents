@@ -12,7 +12,7 @@ def get_completion(prompt):
     with open("prompt-from-nlp.py.{int(time.time())}.txt", "w") as f:
         f.write(prompt)
     completion = openai.Completion.create(
-        engine = "davinci",
+        engine = "text-davinci-001",
         temperature = 0.8,
         max_tokens = 150,
         prompt = prompt,

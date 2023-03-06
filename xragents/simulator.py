@@ -55,8 +55,9 @@ def personPlusAi(chr: Character):
 
         # Save the audio files to the output directory
         #time.sleep(0.5) # time pause for audio files to be written properly (prevents error)
-        audio.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
-        audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
+        if not sess.text_only:
+            audio.concat_audio_double_directory("recording/ai/", "recording/user/") # the finished audio file is saved
+            audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
 
         return history
     

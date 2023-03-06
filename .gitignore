@@ -2,6 +2,7 @@
 target
 *.wav
 *.txt
+*.zip
 .fleet
 .env
 doc/_build

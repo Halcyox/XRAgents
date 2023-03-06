@@ -116,7 +116,17 @@ def clear_prompt_files():
         print(f"Removing {f}...", file=sys.stderr)
         os.remove(f)
 
-menu.append_item(FunctionItem("Clear prompt history", clear_prompt_files))
+def zip_prompt_files():
+    """Zips all prompt files from the current directory"""
+    import zipfile
+    files_here = (o for o in os.listdir(".") if o.startswith("prompt-") and o.endswith(".txt"))
+    with zipfile.ZipFile(f"prompt-files-{time.time()}.zip", "w") as zip:
+        for f in files_here:
+            print(f"Adding {f}...", file=sys.stderr)
+            zip.write(f)
+            clear_prompt_files() # clear files after zipping them
+
+menu.append_item(FunctionItem("Zip prompt history", zip_prompt_files))
 
 # Finally, we call show to show the menu and allow the user to interact
 menu.show()
