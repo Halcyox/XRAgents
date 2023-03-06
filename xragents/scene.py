@@ -22,9 +22,13 @@ class Scene:
     text_only: bool
     history: str = ""
 
-    def prompt_for_gpt3(self) -> str: 
+    def __post_init__(self):
+        self.history = self.description
+
+    def prompt_for_gpt3(self) -> str:
         """Return the entire prompt to GPT3"""
-        return f"{self.description}{' '.join(c.desc for c in self.characters)}\n{self.history}"
+        char_descs = '\n'.join(c.desc for c in self.characters)
+        return f"{char_descs}\n{self.history}"
 
     def animate(self, character, charLine: str):
         """Used to animate a specific character based on the text input
@@ -48,14 +52,28 @@ class Scene:
         self.history += f"\nYou: {said_what}"
 
 
-    def make_speak(self, character, primitivePath) -> str:
-        """Tell a character something and speak its response to primitivePath, returning what the charac spoke as text"""
-        prompt = self.prompt_for_gpt3()
+    def make_speak(self, character, primitivePath=None) -> str:
+        """Tell a character something, returning what the character spoke as text"""
+        char_descs = '\n'.join(c.desc for c in self.characters)
+        prompt = f"{char_descs}\n{self.history}"
         #print(prompt)
+        prevlen = len(prompt)
+        if len(prompt)/4 > (2048-150):
+            logging.info(f"Prompt too long ({len(prompt)} chars), autosummarizing!\n{prompt}")
+            prompt = nlp.summarize(prompt)
+            compression_ratio = 0
+            lp = len(prompt)
+            if lp != 0:
+                compression_ratio = prevlen/lp
+            logging.info(f"Continuing with:\n{prompt}\nnew ratio: ({compression_ratio}).")
+        else:
+            logging.debug("not summarizing!")
         textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
         #responseEmotion = nlp.get_emotion(textResponse)
         # print(f"textResponse: {textResponse}", file=sys.stderr)
         self.history = updatedHistory
+        print(f"history rn: {self.history}", file=sys.stderr)
+        #
         # print("#################")
 
         # print(f"history rn: {self.history}", file=sys.stderr)
@@ -90,18 +108,23 @@ class Scene:
         #narrative_next = f"\nYou: {promptText}\n{character.name}:"
 
         #narrative_next = f"\n{promptText}\n{character.name}:"
-        responsePrompt = f"\n{promptText}\n{character.name}:"
+        newHistoryChunk = f"\n{character.name}:"
+        logging.debug(f"responsePrompt: {newHistoryChunk}")
         
         #     responsePrompt = f"""
         #     {sessionData[sessionDescription]}
         #     {characterDescription}
         #     You: {promptText}
         #     {characterName}:"""
-        
-        response = nlp.get_completion(responsePrompt)
-        responsePrompt += response
-        
 
+        response = None
+        
+        while response is None or response == "":
+            response = nlp.get_completion(promptText+newHistoryChunk)
+            time.sleep(1)  # delay by one second
+
+        newHistoryChunk += response
+        
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
         #     print("DEBUG RESPONSE: ", response)
@@ -114,11 +137,10 @@ class Scene:
         #     Emotion:
         #     ###
         #     """)
-        updatedHistory = responsePrompt
         with open(f"prompt-{int(time.time())}.txt", "w") as f:
-            f.write(updatedHistory)
+            f.write(newHistoryChunk)
 
-        return response, updatedHistory
+        return response, newHistoryChunk
 
     def __str__(self):
         return repr(self)

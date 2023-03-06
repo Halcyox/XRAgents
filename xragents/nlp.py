@@ -12,7 +12,7 @@ def get_completion(prompt):
     with open("prompt-from-nlp.py.{int(time.time())}.txt", "w") as f:
         f.write(prompt)
     completion = openai.Completion.create(
-        engine = "text-davinci-001",
+        engine = "davinci",
         temperature = 0.8,
         max_tokens = 150,
         prompt = prompt,
@@ -21,6 +21,17 @@ def get_completion(prompt):
         ).choices[0].text.rstrip()
     return completion
 
+def summarize(to_be_summarized):
+    """Summarize a text"""
+    summary = openai.Completion.create(
+        engine = "text-davinci-003",
+        temperature = 0.8,
+        max_tokens = 2500,
+        prompt = "Summarize the following conversation into a compressed format:\n"+ to_be_summarized,
+        frequency_penalty = 1.5,
+        stop = ["\n"]
+        ).choices[0].text.rstrip()
+    return summary
 
 def get_emotion(text):
     """This function is supposed to act as sentiment analysis, but it doesn't work currently."""
