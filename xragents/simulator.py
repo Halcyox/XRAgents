@@ -30,7 +30,9 @@ def personPlusAi(chr: Character):
         # Create directories to temporarily store audio files
         utils.create_audio_directories()
 
-        print("This is an example info log!")
+        # Convo loop starts here
+        shouldntExit = True 
+        logging.info("This is an example info log!")
         print(f"You are now talking with {chr.name}!")
         print(f"Conversation description: {sess.description}")
         print(f"{chr.name}: {chr.desc} ")

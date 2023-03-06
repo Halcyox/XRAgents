@@ -56,16 +56,16 @@ class Scene:
         prompt = f"pee pee{self.description}\npoo poo{char_descs}" # Generate prompt
         #print(prompt)
         prevlen = len(prompt) # Get length of prompt
-        if len(prompt)/4 > (2048-150): 
+        if len(prompt)/4 > (2048-150):
             print(f"Prompt too long ({len(prompt)} chars), autosummarizing!\n{prompt}")
             prompt = nlp.summarize(prompt)
             compression_ratio = 0
             lp = len(prompt)
             if lp != 0:
                 compression_ratio = prevlen/lp
-            print(f"Continuing with:\n{prompt}\nnew ratio: ({compression_ratio}).")
+            logging.info(f"Continuing with:\n{prompt}\nnew ratio: ({compression_ratio}).")
         else:
-            print("not summarizing!")
+            logging.debug("not summarizing!")
         textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
         #responseEmotion = nlp.get_emotion(textResponse)
         # print(f"textResponse: {textResponse}", file=sys.stderr)
@@ -109,8 +109,8 @@ class Scene:
 
         
         #narrative_next = f"\n{promptText}\n{character.name}:"
-        newHistoryChunk = f"{self.history}\n{character.name}:"
-        print(f"newHistoryChunk (in progress): {newHistoryChunk}")
+        newHistoryChunk = f"\n{character.name}:"
+        logging.debug(f"newHistoryChunk (in progress)", newHistoryChunk)
         
         #     responsePrompt = f"""
         #     {sessionData[sessionDescription]}
