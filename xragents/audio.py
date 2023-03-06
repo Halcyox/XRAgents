@@ -69,7 +69,7 @@ def concat_audio_single_directory(path,outputPath=None):
     # Concatenate the audio files, starting with the human Paths, alternating with the ai paths.
     audio = AudioSegment.empty()
     for i in range(len(paths)):
-        time.sleep(1)
+        time.sleep(0.1)
         audio += AudioSegment.from_file(paths[i])
 
     if outputPath is None: # default output path

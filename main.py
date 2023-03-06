@@ -23,13 +23,13 @@ class CustomFormatter(logging.Formatter):
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
-    fmtstr = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+    fmtstr = "%(asctime)s - %(name)s - %(message)s (%(filename)s:%(lineno)d)"
 
     FORMATS = {
         logging.DEBUG: grey + fmtstr + reset,
-        logging.INFO: grey + fmtstr + reset,
+        logging.INFO: red + fmtstr + reset,
         logging.WARNING: yellow + fmtstr + reset,
-        logging.ERROR: red + fmtstr + reset,
+        logging.ERROR: grey + fmtstr + reset,
         logging.CRITICAL: bold_red + fmtstr + reset
     }
 
@@ -38,7 +38,7 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 
-logger = logging.getLogger("My_app")
+logger = logging.getLogger("multiagency")
 logger.setLevel(logging.DEBUG)
 
 # create console handler with a higher log level

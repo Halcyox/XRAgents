@@ -57,18 +57,17 @@ class Scene:
         """Speak, from a character's perspective."""
         char_descs = '\n'.join(c.desc for c in self.characters) # Get all character descriptions
         prompt = f"{self.description}\n{char_descs}{self.history}" # Generate prompt
-        logging.error(f"{prompt}")
+        #logging.error(f"{prompt}")
         prevlen = len(prompt) # Get length of prompt
-        if len(prompt)/4 > (2048-150):
+        if len(prompt)/4 > (2048-800):
             print(f"Prompt too long ({len(prompt)} chars), autosummarizing!\n{prompt}")
             prompt = nlp.summarize(prompt)
+            self.history = prompt # Update history, so we don't have to summarize again
             compression_ratio = 0
             lp = len(prompt)
             if lp != 0:
                 compression_ratio = prevlen/lp
             logging.info(f"Continuing with:\n{prompt}\nnew ratio: ({compression_ratio}).")
-        else:
-            logging.debug("not summarizing!")
         textResponse = self._model_does_reply_thingy(prompt, character) # Generate response
         #responseEmotion = nlp.get_emotion(textResponse)
         # print(f"textResponse: {textResponse}", file=sys.stderr)
@@ -117,11 +116,11 @@ class Scene:
         promptToChar = f"{promptText}\n{character.name}:"
 
         while response is None or response == "":
-            logging.warn(f"asking the ai! {promptToChar}")
+            #logging.warn(f"asking the ai! {promptToChar}")
             response = nlp.get_completion(promptToChar)
             time.sleep(1)  # delay by one second
 
-        logging.info(f"responded with (final): {response}")
+        #logging.info(f"responded with (final): {response}")
         
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
