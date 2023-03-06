@@ -45,7 +45,7 @@ class Scene:
 
     def user_provided_input(self, said_what):
         """Add the user's input (as a ListenRecord) to the history"""
-        self.history += f"\nYou:{said_what}"
+        self.history += f"\nYou: {said_what}"
 
 
     def make_speak(self, character, primitivePath) -> str:
@@ -54,9 +54,13 @@ class Scene:
         #print(prompt)
         textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
         #responseEmotion = nlp.get_emotion(textResponse)
-        print(f"textResponse: {textResponse}", file=sys.stderr)
-        self.history += updatedHistory
-        print(f"history rn: {self.history}", file=sys.stderr)
+        # print(f"textResponse: {textResponse}", file=sys.stderr)
+        self.history = updatedHistory
+        # print("#################")
+
+        # print(f"history rn: {self.history}", file=sys.stderr)
+
+        # print("#################")
 
         if not self.text_only:
             wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural") # Generate wav for animation
