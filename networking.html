@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Network/Cloud architecture &#8212; XRAgents  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to XRAgents’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="network-cloud-architecture">
+<h1>Network/Cloud architecture<a class="headerlink" href="#network-cloud-architecture" title="Permalink to this heading">¶</a></h1>
+<p>The network architecture of the software is built to enable, in the
+future, multiple concurrent users interacting in a many-to-many fashion
+with synthetic agents. Web browser is used as primary endpoint software,
+avoiding distribution issues, with minimal/no edge processing.</p>
+<section id="session-leader-sl">
+<h2>Session Leader (SL)<a class="headerlink" href="#session-leader-sl" title="Permalink to this heading">¶</a></h2>
+<p>The session leader is the primary RPC endpoint for the website, speaking
+JSON with the code we write.</p>
+<p>This will contain session management and so forth, handling user
+authentication and ensuring things like token budget.</p>
+<p>The session leader should NEVER be performing computation, and instead
+merely coordinating (as necessary) the other servers.</p>
+</section>
+<section id="face-scheduler-fs">
+<h2>Face scheduler (FS)<a class="headerlink" href="#face-scheduler-fs" title="Permalink to this heading">¶</a></h2>
+<p>The face scheduler is reponsible for keeping track of which A2F face is
+currently being used for which user.</p>
+</section>
+<section id="audio-server-as">
+<h2>Audio server (AS)<a class="headerlink" href="#audio-server-as" title="Permalink to this heading">¶</a></h2>
+<p>The audio server receives data from browser and shuttles over to A2F.</p>
+<p>Runs the WebRTC receiver.</p>
+</section>
+<section id="video-proxy-vp">
+<h2>Video proxy (VP)<a class="headerlink" href="#video-proxy-vp" title="Permalink to this heading">¶</a></h2>
+<p>The video proxy receives data from A2F and shuttles over to browser.</p>
+<p>Runs the RTP receiver that ffmpeg sends to.</p>
+</section>
+<section id="example-user-session">
+<h2>Example user session<a class="headerlink" href="#example-user-session" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>User: opens link to speak to their avatar (contains SID)
+tutor.js: tell the SL we are here now (SID=...)
+SL -&gt; FS: is there an available face?
+SL &lt;- FS: {Yes it is $FID, No try again later}
+
+unique session id: CKEY=SecureCombination(SID,FID)
+
+SL -&gt; AS: prepare for CKEY
+SL -&gt; VP: prepare for CKEY
+SL -&gt; tutor.js: You are user CKEY=SecureCombination(SID,FID)
+
+tutor.js -&gt; AS: start WebRTC stream with CKEY
+tutor.js -&gt; VP: start receiving stream with CKEY
+</pre></div>
+</div>
+<p>Done! Now the session is established and the streams will be processed
+on-demand.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">XRAgents</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Network/Cloud architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#session-leader-sl">Session Leader (SL)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#face-scheduler-fs">Face scheduler (FS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#audio-server-as">Audio server (AS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#video-proxy-vp">Video proxy (VP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-user-session">Example user session</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to XRAgents’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Halcyox.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/networking.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
