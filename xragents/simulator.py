@@ -11,26 +11,36 @@ from xragents import setting, scene
 from xragents import audio, utils, cast
 from xragents.types import Character
 
+class InputModality:
+    def get_line():
+        pass
+
+
 def personPlusAi(chr: Character):
     history = []
     """This is a basic conversation between you and an AI. Choose your session description and what characters you want."""
+    text_only = input("Text only? [Y/n]").lower() != "n" # ask for text_only flag
     with scene.make_scene(id=utils.next_session(),
                     name="Contemplations on Entities",
                     description=f"The following is an enlightening conversation between you and {chr.name} about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-                    characters=[chr],
+                    characters=[chr], 
+                    text_only=text_only
                     ) as sess:
-        # Create directories
-        utils.create_directory("recording/output/", False) # Output should not be cleared
-        utils.create_directory("recording/ai/") # Clears temporary files there
-        utils.create_directory("recording/user/") # Clears temporary files there
+        
+        # Create directories to temporarily store audio files
+        utils.create_audio_directories()
 
-        shouldntExit = True # conversation will loop until user wants to exit
+        # Convo loop starts here
+        shouldntExit = True 
         print(f"You are now talking with {chr.name}!")
         print(f"Conversation description: {sess.description}")
         print(f"{chr.name}: {chr.desc} ")
-        while shouldntExit: # Keeps looping and listening to the user and gets input from AI as long as "quit" is not said by user
-            latest_record = audio.listen_until_quiet_again() # Audio based user input
-            #latest_record = audio.ListenRecord(io.BytesIO(), pathlib.Path("dummy_file.wav"), input("You: ")) # Text based user input
+        while shouldntExit: # Loops until "quit" keyword or silence is detected
+            # if we have text_only flag set on, we don't record audio
+            if not sess.text_only:
+                latest_record = audio.listen_until_quiet_again() # Audio based user input
+            
+            latest_record = audio.ListenRecord(io.BytesIO(), pathlib.Path("dummy_file.wav"), input("You: ")) # Text based user input
             #print(latest_record.spoken_content)
 
             if(latest_record.spoken_content == "quit" or latest_record.spoken_content is None): # Trigger for ending convo, will then concatenate
@@ -38,6 +48,7 @@ def personPlusAi(chr: Character):
                 break
 
             latest_record.file_handle.close()
+            sess.user_provided_input(latest_record)
             response = sess.make_speak(chr, chr.primitivePath)
             history.append(setting.DialogHistory(response))
             #print(f"{chr.name}: {response}")

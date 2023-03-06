@@ -113,6 +113,8 @@ class ListenRecord:
     path: Path
     spoken_content: str
 
+    def __str__(self):
+        return self.spoken_content
 
 def listen_until_quiet_again() -> ListenRecord:
     """This listens to one chunk of user input, returning file handle to """

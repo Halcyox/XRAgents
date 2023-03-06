@@ -2,13 +2,13 @@ from dataclasses import dataclass
 import time
 import enum
 import logging
+import sys
 
 from contextlib import contextmanager
 import os
 from typing import Optional, Any # This is support for type hints
 from log_calls import log_calls # For logging errors and stuff
 
-#from setting import SettingDescription
 from . import nlp, audio, anim
 
 @dataclass
@@ -19,10 +19,8 @@ class Scene:
     name: str
     description: str # conversation description
     characters: list[Any]
+    text_only: bool
     history: str = ""
-
-    # NOTE: dataclasses solve this constructor. ember knew what they were doing and louis is dumb
-    # revisit this and unbreak it
 
     def prompt_for_gpt3(self) -> str: 
         """Return the entire prompt to GPT3"""
@@ -45,18 +43,28 @@ class Scene:
         # Format response
         responseData = {"responseText": charLine}
 
-    def make_speak(self, character, primitivePath) -> str:
-        """Tell a character something and speak its response to primitivePath, returning what we spoke as text"""
-        prompt = self.prompt_for_gpt3()
-        textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
-        responseEmotion = nlp.get_emotion(textResponse)
-        self.history += textResponse
-        print(f"Response: {textResponse} with computed emotion {responseEmotion}")
+    def user_provided_input(self, said_what):
+        """Add the user's input (as a ListenRecord) to the history"""
+        self.history += f"\nYou:{said_what}"
 
-        wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural") # Generate wav
+
+    def make_speak(self, character, primitivePath) -> str:
+        """Tell a character something and speak its response to primitivePath, returning what the charac spoke as text"""
+        prompt = self.prompt_for_gpt3()
+        #print(prompt)
+        textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
+        #responseEmotion = nlp.get_emotion(textResponse)
+        print(f"textResponse: {textResponse}", file=sys.stderr)
+        self.history += updatedHistory
+        print(f"history rn: {self.history}", file=sys.stderr)
+
+        if not self.text_only:
+            wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural") # Generate wav for animation
 
         print(f"{character.name}: {textResponse}")
-        anim.animate(wavPath, primitivePath) # Execute animation
+        
+        if not self.text_only:
+            anim.animate(wavPath, primitivePath) # Execute animation
         # audio.cleanup(wavPath, outputPath) # Erases after speaking
 
         return textResponse
@@ -70,19 +78,25 @@ class Scene:
         historyPath = os.path.join(histdir, f"{str(self.id) + str(time.time())}_history.txt")
         with open(historyPath, "w") as historyFile:
             historyFile.write(self.history)
-            print(f"just wrote the history:\n{self.history}")
+            #print(f"just wrote the history:\n{self.history}")
 
     def _model_does_reply_thingy(self, promptText:str, character):
         """User gives an input to GPT3, and gets a response and the updated history."""
         #print(character)
-        narrative_next = f"\nYou: {promptText}\n{character.name}:"
-        responsePrompt = self.description + narrative_next
+        #narrative_next = f"\nYou: {promptText}\n{character.name}:"
+
+        #narrative_next = f"\n{promptText}\n{character.name}:"
+        responsePrompt = f"\n{promptText}\n{character.name}:"
+        
         #     responsePrompt = f"""
         #     {sessionData[sessionDescription]}
         #     {characterDescription}
         #     You: {promptText}
         #     {characterName}:"""
-        response = nlp.get_completion(self.description + responsePrompt)
+        
+        response = nlp.get_completion(responsePrompt)
+        responsePrompt += response
+        
 
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
@@ -96,7 +110,10 @@ class Scene:
         #     Emotion:
         #     ###
         #     """)
-        updatedHistory = responsePrompt + response
+        updatedHistory = responsePrompt
+        with open(f"prompt-{int(time.time())}.txt", "w") as f:
+            f.write(updatedHistory)
+
         return response, updatedHistory
 
     def __str__(self):
@@ -104,10 +121,10 @@ class Scene:
 
 
 @contextmanager
-def make_scene(id, name, description, characters):
+def make_scene(id, name, description, characters, text_only):
     """makes sure a scene's save history is always saved!"""
     # resource = Scene(*args, **kwds)
-    resource = Scene(id,name,description,characters)
+    resource = Scene(id,name,description,characters, text_only)
     try:
         yield resource
     finally:

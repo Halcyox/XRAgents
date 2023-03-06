@@ -9,10 +9,9 @@ import ZODB, ZODB.FileStorage  # Database storage of objects
 
 from ZODB.blob import Blob
 
-
 @dataclass
 class DialogRound:
-   """Placeholder for more granular information about each dialog round"""
+   """Placeholder for more granular information about each dialog round."""
    who_spoke: Character
    what_they_said: str
    mental_state_before_round: typing.Any
@@ -20,7 +19,7 @@ class DialogRound:
 
 @dataclass
 class DialogHistory:
-    """A class for storing a single phrase said by a single agent"""
+    """A class for storing a single phrase said by a single agent."""
     dialog_history : str
 
 
@@ -41,8 +40,8 @@ class InfiniteTelevision:
     The user can also step in and break the fourth
     wall at any time under a chosen character.
 
-    Current limit is 9 supported animation nodes
-    However you can have unlimited text AI talking in a scene
+    Current limit is 9 supported animation nodes.
+    However you can have unlimited text AI talking in a scene.
     """
     characters_: list[Character]
     history: list[DialogHistory]
@@ -55,7 +54,7 @@ class InfiniteTelevision:
         pass
 
     def get_history(self):
-        """This will provide the history so far """
+        """This will provide the history so far."""
         return self.history
 
 

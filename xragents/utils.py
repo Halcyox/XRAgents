@@ -18,6 +18,11 @@ def create_directory(directory, clear=True): # create a directory if it doesn't 
             pass
             #os.remove(os.path.join(directory, filename))
 
+def create_audio_directories():
+    create_directory("recording/output/", False) # Output should not be cleared
+    create_directory("recording/ai/") # Clears temporary files there
+    create_directory("recording/user/") # Clears temporary files there
+
 # The Script class holds the information for a script, actors, context, and lines.
 class Script:
     def __init__(self, voice, emotion, lines):
