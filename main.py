@@ -4,8 +4,8 @@ import typing
 import random, logging
 from dataclasses import dataclass
 
-from consolemenu import *
-from consolemenu.items import *
+from consolemenu import ConsoleMenu
+from consolemenu.items import FunctionItem
 
 import xragents
 from xragents import setting, scene
@@ -13,6 +13,43 @@ from xragents import audio, utils, cast, simulator
 from xragents.types import Character
 
 #from xragents.scene import Scene
+
+import logging
+
+class CustomFormatter(logging.Formatter):
+
+    grey = "\x1b[38;20m"
+    yellow = "\x1b[33;20m"
+    red = "\x1b[31;20m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    fmtstr = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+
+    FORMATS = {
+        logging.DEBUG: grey + fmtstr + reset,
+        logging.INFO: grey + fmtstr + reset,
+        logging.WARNING: yellow + fmtstr + reset,
+        logging.ERROR: red + fmtstr + reset,
+        logging.CRITICAL: bold_red + fmtstr + reset
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+logger = logging.getLogger("My_app")
+logger.setLevel(logging.DEBUG)
+
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+ch.setFormatter(CustomFormatter())
+
+logger.addHandler(ch)
+logging.root = logger
+
 
 NUM_ACTORS = 2 # We can't get more than 5 without lagging usually, modify this if you want more actors in the USD scene
 
@@ -67,6 +104,7 @@ def nAIs(lines,sessid=1):
                     name="Contemplations on Entities",
                     description="The following is an enlightening conversation between you and Avatar about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
                     characters=list(characters.values()),
+                    text_only=False,#todo
                     ) as sess:
 
         # inform a server about our server someday

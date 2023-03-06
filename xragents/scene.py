@@ -44,17 +44,20 @@ class Scene:
         # Format response
         responseData = {"responseText": charLine}
 
+    def report_histfrag(self, histfrag):
+        """Add the user's input (as a ListenRecord) to the history"""
+        self.history += '\n'+histfrag
+        logging.info(f"fresh histfrag: {histfrag}")
+
     def user_provided_input(self, said_what):
         """Add the user's input (as a ListenRecord) to the history"""
-        self.history += f"\nYou: {said_what}"
-        print("Just added to history: ", said_what)
-
+        self.report_histfrag(f"You: {said_what}")
 
     def make_speak(self, character, primitivePath=None) -> str:
         """Speak, from a character's perspective."""
         char_descs = '\n'.join(c.desc for c in self.characters) # Get all character descriptions
-        prompt = f"pee pee{self.description}\npoo poo{char_descs}" # Generate prompt
-        #print(prompt)
+        prompt = f"{self.description}\n{char_descs}{self.history}" # Generate prompt
+        logging.error(f"{prompt}")
         prevlen = len(prompt) # Get length of prompt
         if len(prompt)/4 > (2048-150):
             print(f"Prompt too long ({len(prompt)} chars), autosummarizing!\n{prompt}")
@@ -66,13 +69,12 @@ class Scene:
             logging.info(f"Continuing with:\n{prompt}\nnew ratio: ({compression_ratio}).")
         else:
             logging.debug("not summarizing!")
-        textResponse, updatedHistory = self._model_does_reply_thingy(prompt, character) # Generate response
+        textResponse = self._model_does_reply_thingy(prompt, character) # Generate response
         #responseEmotion = nlp.get_emotion(textResponse)
         # print(f"textResponse: {textResponse}", file=sys.stderr)
         #print(f"updatedHistory: {updatedHistory}", file=sys.stderr)
         
-        self.history += updatedHistory
-        print(f"history rn: {self.history}", file=sys.stderr)
+        self.report_histfrag(f"{character.name}: {textResponse}")
         #
         # print("#################")
 
@@ -82,12 +84,8 @@ class Scene:
 
         if not self.text_only:
             wavPath = audio.generate_wav(textResponse, "en-US-TonyNeural") # Generate wav for animation
-
-        print(f"{character.name}: {textResponse}")
-        
-        if not self.text_only:
             anim.animate(wavPath, primitivePath) # Execute animation
-        # audio.cleanup(wavPath, outputPath) # Erases after speaking
+            # audio.cleanup(wavPath, outputPath) # Erases after speaking
 
         return textResponse
 
@@ -109,9 +107,6 @@ class Scene:
 
         
         #narrative_next = f"\n{promptText}\n{character.name}:"
-        newHistoryChunk = f"\n{character.name}:"
-        logging.debug(f"newHistoryChunk (in progress)", newHistoryChunk)
-        
         #     responsePrompt = f"""
         #     {sessionData[sessionDescription]}
         #     {characterDescription}
@@ -119,14 +114,14 @@ class Scene:
         #     {characterName}:"""
 
         response = None
-        
+        promptToChar = f"{promptText}\n{character.name}:"
+
         while response is None or response == "":
-            print(f"{promptText+newHistoryChunk}")
-            response = nlp.get_completion(promptText+newHistoryChunk)
+            logging.warn(f"asking the ai! {promptToChar}")
+            response = nlp.get_completion(promptToChar)
             time.sleep(1)  # delay by one second
 
-        newHistoryChunk += response
-        print(f"newHistoryChunk (final): {newHistoryChunk}")
+        logging.info(f"responded with (final): {response}")
         
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
@@ -141,9 +136,9 @@ class Scene:
         #     ###
         #     """)
         with open(f"prompt-{int(time.time())}.txt", "w") as f:
-            f.write(newHistoryChunk)
+            f.write(promptToChar)
 
-        return response, newHistoryChunk
+        return response
 
     def __str__(self):
         return repr(self)

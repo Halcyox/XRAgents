@@ -68,6 +68,7 @@ def twoAiPlusPerson(chr1: Character, chr2: Character):
                     name="Contemplations on Entities",
                     description=f"The following is an entertaining convo between {chr1.name} and {chr2.name} about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
                     characters=[chr1, chr2],
+                    text_only=True,
                     ) as sess:
         # Create directories
         utils.create_directory("recording/output/", False) # Output should not be cleared
