@@ -101,15 +101,22 @@ def two_ai():
 
     simulator.twoAiPlusPerson(cast.Avatar, cast.Unvatar)
 
-
 # A FunctionItem runs a Python function when selected
 one_ai_item = FunctionItem("Talk with an AI", one_ai)
-
 two_ai_item = FunctionItem("Watch two AI talk together", two_ai)
 
 # Once we're done creating them, we just add the items to the menu
 menu.append_item(one_ai_item)
 menu.append_item(two_ai_item)
+    
+def clear_prompt_files():
+    """Clears all prompt files from the current directory"""
+    files_here = (o for o in os.listdir(".") if o.startswith("prompt-") and o.endswith(".txt"))
+    for f in files_here:
+        print(f"Removing {f}...", file=sys.stderr)
+        os.remove(f)
+
+menu.append_item(FunctionItem("Clear prompt history", clear_prompt_files))
 
 # Finally, we call show to show the menu and allow the user to interact
 menu.show()
