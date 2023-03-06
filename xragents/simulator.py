@@ -32,7 +32,7 @@ def personPlusAi(chr: Character):
 
         # Convo loop starts here
         shouldntExit = True 
-        logging.info("This is an example info log!")
+        print("This is an example info log!")
         print(f"You are now talking with {chr.name}!")
         print(f"Conversation description: {sess.description}")
         print(f"{chr.name}: {chr.desc} ")
