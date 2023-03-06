@@ -124,7 +124,7 @@ def zip_prompt_files():
         for f in files_here:
             print(f"Adding {f}...", file=sys.stderr)
             zip.write(f)
-            clear_prompt_files() # clear files after zipping them
+    clear_prompt_files() # clear files after zipping them
 
 menu.append_item(FunctionItem("Zip prompt history", zip_prompt_files))
 
