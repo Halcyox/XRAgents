@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 import time
 import enum
@@ -9,16 +11,15 @@ import os
 from typing import Optional, Any # This is support for type hints
 from log_calls import log_calls # For logging errors and stuff
 
+from .types import Character
 from . import nlp, audio, anim
 
 @dataclass
 class Scene:
-    """This represents a scene. We can have multiple scenes in a setting.
-    Each scene has an id, name, description, and a list of characters involved."""
     id: int
     name: str
     description: str # conversation description
-    characters: list[Any]
+    characters: list[Character]
     text_only: bool
     history: str = ""
 

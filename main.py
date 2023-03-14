@@ -12,6 +12,8 @@ from xragents import setting, scene
 from xragents import audio, utils, cast, simulator
 from xragents.types import Character
 
+from dataclass_csv import DataclassReader
+
 #from xragents.scene import Scene
 
 import logging
@@ -69,13 +71,12 @@ def allocate_characters(num_characters:int,names:list[str],descriptions: list[st
                                                    primitivePath=primPaths[i])
     return characters
 
-def script_input(inputDir):
-    """load all text files in the input directory into a list
-    and generate a conversation using it and audio2face"""
+def conversation_from_txtfile_dir(dir):
+    """Play a conversation script (stored as a directory of txtfiles"""
     inputFiles = []
-    for file in os.listdir(inputDir):
+    for file in os.listdir(dir):
         if file.endswith(".txt"):
-            inputFiles.append(os.path.join(inputDir, file))
+            inputFiles.append(os.path.join(dir, file))
     print(f"dbg:{inputFiles}")
     for index,file in enumerate(inputFiles):
         print(index,file)
@@ -137,12 +138,15 @@ def one_ai():
     print("Starting the simulator with one AI")
     simulator.personPlusAi(cast.KillerOfWorlds)
     #dirname = os.path.dirname(__file__)
-    #script_input(os.path.join(dirname,"scripts/input/"))
+    #script_input(oxs.path.join(dirname,"scripts/input/"))
 
 def two_ai():
     watchTV = setting.InfiniteTelevision()
 
-    simulator.twoAiPlusPerson(cast.Avatar, cast.Unvatar)
+    with open(input("file path to load:")) as f:
+        reader = DataclassReader(f, scene.Scene)
+        scene = next(reader)
+        simulator.interactive_conversation(scene)
 
 # A FunctionItem runs a Python function when selected
 one_ai_item = FunctionItem("Talk with an AI", one_ai)
