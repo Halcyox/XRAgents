@@ -167,5 +167,6 @@ def zip_prompt_files():
 
 menu.append_item(FunctionItem("Zip prompt history", zip_prompt_files))
 
+
 # Finally, we call show to show the menu and allow the user to interact
 menu.show()
