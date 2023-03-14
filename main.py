@@ -17,7 +17,6 @@ from xragents.types import Character
 import logging
 
 class CustomFormatter(logging.Formatter):
-
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
     red = "\x1b[31;20m"
@@ -39,11 +38,11 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 logger = logging.getLogger("multiagency")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG) # CHANGE LOGGING LEVEL HERE
 
 # create console handler with a higher log level
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+ch.setLevel(logging.DEBUG) # CHANGE LOGGING LEVEL HERE
 
 ch.setFormatter(CustomFormatter())
 
@@ -85,6 +84,11 @@ def script_input(inputDir):
             nAIs(lines,index+1)
 
 def nAIs(lines,sessid=1):
+    """This allows you to input a list of lines and play a conversation that was already written.
+    It is useful for testing the audio2face system and for generating a conversation between n characters from a script.
+    Format of input file:
+    Character1: Hello, how are you?
+    Character2: I am fine, thank you."""
     #######################
     utils.create_directory("scripts/output_audio/", False)
     utils.create_directory("scripts/output_text/", False)
@@ -131,7 +135,7 @@ def one_ai():
     watchTV = setting.InfiniteTelevision()
 
     print("Starting the simulator with one AI")
-    simulator.personPlusAi(cast.Avatar)
+    simulator.personPlusAi(cast.KillerOfWorlds)
     #dirname = os.path.dirname(__file__)
     #script_input(os.path.join(dirname,"scripts/input/"))
 

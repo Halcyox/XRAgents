@@ -117,7 +117,7 @@ class ListenRecord:
         return self.spoken_content
 
 def listen_until_quiet_again() -> ListenRecord:
-    """This listens to one chunk of user input, returning file handle to """
+    """This listens to one chunk of user input and stores in a file, then returns it."""
     try:
         obj = calibrate()
         print("Listening...") # The microphone is now listening for input

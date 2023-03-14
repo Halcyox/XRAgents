@@ -1,5 +1,6 @@
 import requests
 import openai
+import logging
 import os
 from dotenv import load_dotenv
 import time
@@ -7,8 +8,9 @@ from log_calls import log_calls
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 import openai.error
+
 def get_completion(prompt):
-    """Send in a prompt and get a completion"""
+    """Send in a prompt and get a completion."""
     with open("prompt-from-nlp.py.{int(time.time())}.txt", "w") as f:
         f.write(prompt)
     return openai.Completion.create(
@@ -21,7 +23,7 @@ def get_completion(prompt):
         ).choices[0].text.rstrip()
 
 def summarize(to_be_summarized):
-    """Summarize a text"""
+    """Summarize a text."""
     summary = openai.Completion.create(
         engine = "text-davinci-003",
         temperature = 0.8,
@@ -33,7 +35,8 @@ def summarize(to_be_summarized):
     return summary
 
 def get_emotion(text):
-    """This function is supposed to act as sentiment analysis, but it doesn't work currently."""
+    """This acts as sentiment analysis."""
+    logging.error("FIXME")
     emotion = get_completion(f"""
     Text: {text}
     Emotion:""")

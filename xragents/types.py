@@ -21,3 +21,19 @@ class Character:
 
     def __str__(self):
         return repr(self)
+    
+    def azure_ssml(lang,name,text,style):
+        """
+        Azure Speech SDK SSML to modify the voice of the TTS.
+        
+        https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-synthesis-markup"""
+        #TODO:busted?
+        return f"""\
+    <speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="{lang}">
+        <voice name="{name}">
+            <mstts:express-as style="{style}">
+                {text}
+            </mstts:express-as>
+        </voice>
+    </speak>
+            """

@@ -3,6 +3,7 @@ import sys
 import subprocess
 
 def animate(wavPath, primitivePath):
+    """Starts streaming audio to A2F and does an animation RPC."""
     # make sure to add streaming code into functions module
     stream_Path = os.path.abspath(fr"./deps/streaming_server")
     stream_Client = os.path.abspath(fr"./deps/streaming_server/test_client.py")
