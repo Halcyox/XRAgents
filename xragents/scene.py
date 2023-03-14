@@ -23,13 +23,13 @@ class Scene:
     history: str = ""
 
     def prompt_for_gpt3(self) -> str:
-        """Return the entire prompt to GPT3"""
+        """Return the entire prompt to GPT3."""
         char_descs = '\n'.join(c.desc for c in self.characters)
         return f"{char_descs}\n{self.history}"
 
     def animate(self, character, charLine: str):
         """Used to animate a specific character based on the text input
-        onto a specific animation node's audio stream listener"""
+        onto a specific animation node's audio stream listener."""
         # Generate response
         updatedHistory = self.history+f"\n{character.name}:{charLine}\n"
         responseEmotion = nlp.get_emotion(charLine)
@@ -45,19 +45,19 @@ class Scene:
         responseData = {"responseText": charLine}
 
     def report_histfrag(self, histfrag):
-        """Add the user's input (as a ListenRecord) to the history"""
+        """Add the user's input (as a ListenRecord) to the history."""
         self.history += '\n'+histfrag
         logging.info(f"fresh histfrag: {histfrag}")
 
     def user_provided_input(self, said_what):
-        """Add the user's input (as a ListenRecord) to the history"""
+        """Add the user's input (as a ListenRecord) to the history."""
         self.report_histfrag(f"You: {said_what}")
 
     def make_speak(self, character, primitivePath=None) -> str:
         """Speak, from a character's perspective."""
         char_descs = '\n'.join(c.desc for c in self.characters) # Get all character descriptions
         prompt = f"{self.description}\n{char_descs}{self.history}" # Generate prompt
-        #logging.error(f"{prompt}")
+        logging.error(f"{prompt}")
         prevlen = len(prompt) # Get length of prompt
         if len(prompt)/4 > (2048-800):
             print(f"Prompt too long ({len(prompt)} chars), autosummarizing!\n{prompt}")
@@ -116,11 +116,11 @@ class Scene:
         promptToChar = f"{promptText}\n{character.name}:"
 
         while response is None or response == "":
-            #logging.warn(f"asking the ai! {promptToChar}")
+            logging.warn(f"asking the ai! {promptToChar}")
             response = nlp.get_completion(promptToChar)
             time.sleep(1)  # delay by one second
 
-        #logging.info(f"responded with (final): {response}")
+        logging.info(f"responded with (final): {response}")
         
         #     print("DEBUG PROMPT: ", examplePrompt + responsePrompt)
         #     print("\n\n")
@@ -145,7 +145,7 @@ class Scene:
 
 @contextmanager
 def make_scene(id, name, description, characters, text_only):
-    """makes sure a scene's save history is always saved!"""
+    """Ensures a scene's save history is always saved!"""
     # resource = Scene(*args, **kwds)
     resource = Scene(id,name,description,characters, text_only)
     try:

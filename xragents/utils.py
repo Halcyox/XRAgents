@@ -1,6 +1,6 @@
 import os
 import random
-
+from dataclasses import dataclass
 # This file has utility methods for directory creation, etc.
 
 # A fake type language for shared ID generation for random tags
@@ -10,7 +10,8 @@ def next_session() -> SomeSharedIdSpace:
     # TODO: snowflakes
     return random.randint(0,2**64 -1)
 
-def create_directory(directory, clear=True): # create a directory if it doesn't exist, with the option to clear it
+def create_directory(directory, clear=True):
+    """Creates a file directory if one does not already exist, with the option to clear it."""
     if not os.path.exists(directory):
         os.makedirs(directory)
     if clear:
@@ -19,33 +20,14 @@ def create_directory(directory, clear=True): # create a directory if it doesn't 
             #os.remove(os.path.join(directory, filename))
 
 def create_audio_directories():
+    """Create all audio directories."""
     create_directory("recording/output/", False) # Output should not be cleared
     create_directory("recording/ai/") # Clears temporary files there
     create_directory("recording/user/") # Clears temporary files there
 
-# The Script class holds the information for a script, actors, context, and lines.
+@dataclass
 class Script:
-    def __init__(self, voice, emotion, lines):
-        self.voice = voice
-        self.emotion = emotion
-        self.lines = lines
-
-    def get_voice(self):
-        return self.voice
-
-    def get_emotion(self):
-        return self.emotion
-
-    def get_lines(self):    
-        return self.lines
-
-def format_xml(lang,name,text,style):
-    return f"""\
-<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="{lang}">
-    <voice name="{name}">
-        <mstts:express-as style="{style}">
-            {text}
-        </mstts:express-as>
-    </voice>
-</speak>
-        """
+    """This is a script. It holds information for actors, context, and lines."""
+    voice: str 
+    emotion: str
+    lines: list[str]
