@@ -63,6 +63,7 @@ def personPlusAi(chr: Character):
         return history
 
 def interactive_conversation(scene: Scene):
+    """This is a basic conversation between you and n numbers of AI. Choose your session description and what characters you want."""
     history = []
     # TODO: read a scene object from CSV
     """This is a basic conversation between you and n numbers of AI. Choose your session description and what characters you want."""
