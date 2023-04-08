@@ -10,6 +10,7 @@ import xragents
 from xragents import setting, scene
 from xragents import audio, utils, cast
 from xragents.types import Character
+from xragents.scene import Scene
 
 class InputModality:
     def get_line():
@@ -60,16 +61,11 @@ def personPlusAi(chr: Character):
             audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
 
         return history
-    
-def twoAiPlusPerson(chr1: Character, chr2: Character):
+
+def interactive_conversation(scene: Scene):
+    """This is a basic conversation between you and n numbers of AI. Choose your session description and what characters you want."""
     history = []
-    """This is a basic conversation between you and an AI. Choose your session description and what characters you want."""
-    with scene.make_scene(id=utils.next_session(),
-                    name="Contemplations on Entities",
-                    description=f"The following is an entertaining convo between {chr1.name} and {chr2.name} about the nature of artificial and biological entities, on the substance of souls, individuality, agency, and connection.",
-                    characters=[chr1, chr2],
-                    text_only=True,
-                    ) as sess:
+    with scene as sess:
         # Create directories
         utils.create_directory("recording/output/", False) # Output should not be cleared
         utils.create_directory("recording/ai/") # Clears temporary files there
@@ -102,3 +98,4 @@ def twoAiPlusPerson(chr1: Character, chr2: Character):
         audio.cleanup("recording/ai/", "recording/user/") # delete the temporary files
 
         return history
+    
