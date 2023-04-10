@@ -6,3 +6,4 @@ target
 .fleet
 .env
 doc/_build
+example_scene.csv
